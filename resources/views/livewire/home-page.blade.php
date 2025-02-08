@@ -97,7 +97,7 @@
                 <flux:description>(Leave blank if you don't know or it doesn't matter)</flux:description>
             </flux:field>
 
-            <flux:autocomplete wire:model="newSoftware.course_code" label="Course code" placeholder="Eg, ENG1234">
+            <flux:autocomplete wire:model="newSoftware.course_code" label="Course code (required)" placeholder="Eg, ENG1234" required>
                 @foreach ($courseCodes as $courseCode)
                     <flux:autocomplete.item>{{ $courseCode }}</flux:autocomplete.item>
                 @endforeach

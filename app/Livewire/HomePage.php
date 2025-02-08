@@ -75,12 +75,26 @@ class HomePage extends Component
 
     public function updatedFilters()
     {
+        $this->resetPage();
         // request()->user()->update(['school' => $this->filters['school']]);
     }
 
     public function addSoftware()
     {
+        $validated = $this->validate([
+            'newSoftware.name' => 'required|max:255',
+            'newSoftware.os' => 'nullable|in_array:Windows,Mac,Linux',
+            'newSoftware.version' => 'nullable|max:255',
+            'newSoftware.building' => 'nullable|max:255',
+            'newSoftware.lab' => 'nullable|max:255',
+            'newSoftware.config' => 'nullable|max:255',
+            'newSoftware.notes' => 'nullable|max:255',
+            'newSoftware.course_code' => 'required|max:255',
+        ]);
+
+        $userId = 1;
         $newSoftware = $this->newSoftware;
+        $newSoftware['created_by'] = $userId;
         $newSoftware['os'] = implode(',', $newSoftware['os']);
         Software::create(Arr::except($newSoftware, ['course_code']));
 

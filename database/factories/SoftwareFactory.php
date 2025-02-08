@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -26,6 +27,7 @@ class SoftwareFactory extends Factory
             'lab' => $lab,
             'config' => rand(1, 10) == 9 ? fake()->sentence() : null,
             'notes' => rand(1, 10) == 9 ? fake()->sentence() : null,
+            'created_by' => User::factory(),
             'is_new' => false,
             'is_free' => false,
         ];

@@ -22,6 +22,7 @@ return new class extends Migration
             $table->text('notes')->nullable();
             $table->boolean('is_new')->default(false);
             $table->boolean('is_free')->default(false);
+            $table->foreignId('created_by')->constrained('users');
             $table->timestamps();
         });
     }
