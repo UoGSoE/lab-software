@@ -8,6 +8,7 @@ use Livewire\Component;
 use App\Models\Software;
 use Illuminate\Support\Arr;
 use Livewire\WithPagination;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
@@ -83,7 +84,7 @@ class HomePage extends Component
     {
         $validated = $this->validate([
             'newSoftware.name' => 'required|max:255',
-            'newSoftware.os' => 'nullable|in_array:Windows,Mac,Linux',
+            'newSoftware.os' => ['nullable', 'array'],
             'newSoftware.version' => 'nullable|max:255',
             'newSoftware.building' => 'nullable|max:255',
             'newSoftware.lab' => 'nullable|max:255',

@@ -4,8 +4,8 @@
     <flux:separator class="mt-6 mb-6" />
 
     <div class="flex flex-row gap-4 items-center">
-        <flux:input type="text" label="Search" name="search" />
-        <flux:checkbox label="Only show admins?" name="show_admins" />
+        <flux:input type="text" label="Search" name="search" wire:model.live="search" />
+        <flux:checkbox label="Only show admins?" name="show_admins" wire:model.live="onlyAdmins" />
     </div>
 
     <flux:separator class="mt-6 mb-6" />

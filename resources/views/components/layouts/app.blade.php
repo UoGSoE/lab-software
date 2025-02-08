@@ -35,7 +35,7 @@
 
             <flux:navlist variant="outline">
                 <flux:navlist.item icon="cog-6-tooth" href="/settings" :current="request()->routeIs('settings')">Settings</flux:navlist.item>
-                <flux:navlist.item icon="information-circle" href="#">Help</flux:navlist.item>
+                <flux:navlist.item icon="information-circle" href="/help" :current="request()->routeIs('help')">Help</flux:navlist.item>
             </flux:navlist>
 
             <flux:dropdown position="top" align="start" class="max-lg:hidden">
@@ -80,6 +80,9 @@
             {{ $slot }}
         </flux:main>
 
+        <div class="fixed bottom-0 right-0">
+            Hello!
+        </div>
         <flux:toast />
         @fluxScripts
     </body>
