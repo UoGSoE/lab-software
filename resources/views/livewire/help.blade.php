@@ -43,4 +43,10 @@
             </flux:accordion.content>
         </flux:accordion.item>
     </flux:accordion>
+
+    <footer class="text-neutral-400 text-right">
+        <flux:separator class="my-6"/>
+        Problems? Email <a href="mailto:support@example.com" class="text-neutral-500 hover:text-neutral-600">support@example.com</a>
+    </footer>
+
 </div>

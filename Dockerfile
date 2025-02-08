@@ -1,5 +1,5 @@
 ### PHP version we are targetting
-ARG PHP_VERSION=8.0
+ARG PHP_VERSION=8.4
 
 
 ### Placeholder for basic dev stage for use with docker-compose
@@ -11,7 +11,7 @@ CMD ["tini", "--", "/usr/local/bin/app-start"]
 
 
 ### Build JS/css assets
-FROM node:16.14.2 as frontend
+FROM node:20.13.1 as frontend
 
 # workaround for mix.version() webpack bug
 RUN ln -s /home/node/public /public
@@ -21,14 +21,14 @@ WORKDIR /home/node
 
 RUN mkdir -p /home/node/public/css /home/node/public/js /home/node/resources
 
-COPY --chown=node:node package*.json webpack.mix.js .babelrc* /home/node/
+COPY --chown=node:node package*.json *.js .babelrc* /home/node/
 COPY --chown=node:node resources/js* /home/node/resources/js
 COPY --chown=node:node resources/sass* /home/node/resources/sass
 COPY --chown=node:node resources/scss* /home/node/resources/scss
 COPY --chown=node:node resources/css* /home/node/resources/css
 
 RUN npm install && \
-    npm run production && \
+    npm run build && \
     npm cache clean --force
 
 
@@ -84,10 +84,7 @@ COPY docker/custom_php.ini /usr/local/etc/php/conf.d/custom_php.ini
 COPY --from=prod-composer /var/www/html/vendor /var/www/html/vendor
 
 #- Copy in our front-end assets
-RUN mkdir -p /var/www/html/public/js /var/www/html/public/css
-COPY --from=frontend /home/node/public/js /var/www/html/public/js
-COPY --from=frontend /home/node/public/css /var/www/html/public/css
-COPY --from=frontend /home/node/mix-manifest.json /var/www/html/mix-manifest.json
+RUN mkdir -p /var/www/html/public/build /var/www/html/public/build
 
 #- Copy in our code
 COPY . /var/www/html
@@ -120,7 +117,5 @@ ENV APP_DEBUG=0
 #- Copy in our QA php dep's
 COPY --from=qa-composer /var/www/html/vendor /var/www/html/vendor
 
-#- Install sensiolabs security scanner and clear the caches
-RUN curl -OL -o /usr/local/bin/phpcs https://squizlabs.github.io/PHP_CodeSniffer/phpcs.phar && \
-    php /var/www/html/artisan view:clear && \
-    php /var/www/html/artisan cache:clear
+#- Clear the caches
+RUN php /var/www/html/artisan optimize:clear

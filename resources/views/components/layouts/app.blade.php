@@ -80,9 +80,6 @@
             {{ $slot }}
         </flux:main>
 
-        <div class="fixed bottom-0 right-0">
-            Hello!
-        </div>
         <flux:toast />
         @fluxScripts
     </body>
