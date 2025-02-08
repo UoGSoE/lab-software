@@ -85,6 +85,7 @@ class HomePage extends Component
         $validated = $this->validate([
             'newSoftware.name' => 'required|max:255',
             'newSoftware.os' => ['nullable', 'array'],
+            'newSoftware.os.*' => ['nullable', 'string', Rule::in(['Windows', 'Mac', 'Linux'])],
             'newSoftware.version' => 'nullable|max:255',
             'newSoftware.building' => 'nullable|max:255',
             'newSoftware.lab' => 'nullable|max:255',
@@ -103,6 +104,6 @@ class HomePage extends Component
 
         $this->reset('newSoftware');
 
-        Flux::toast('Software added!');
+        Flux::toast('Software added!', variant: 'success');
     }
 }
