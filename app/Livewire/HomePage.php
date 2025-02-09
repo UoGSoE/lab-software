@@ -22,7 +22,7 @@ class HomePage extends Component
         'os' => ['Windows'],
         'name' => '',
         'version' => '',
-        'building' => '',
+        'building' => [],
         'lab' => '',
         'config' => '',
         'notes' => '',
@@ -31,7 +31,6 @@ class HomePage extends Component
         'course_code' => '',
     ];
 
-    public string $newCourseCode = '';
     public array $filters = [
         'school' => '',
         'course' => '',
@@ -51,7 +50,6 @@ class HomePage extends Component
         // $softwareTitles = $courses->map(fn ($course) => $course->software->map(fn ($software) => $software->name))->unique();
         return view('livewire.home-page', [
             'courses' => $courses,
-            // 'softwareTitles' => $softwareTitles,
             'courseCodes' => $courseCodes,
             'academicSession' => $academicSession,
         ]);
@@ -84,17 +82,6 @@ class HomePage extends Component
         // request()->user()->update(['school' => $this->filters['school']]);
     }
 
-    public function updatingNewSoftware($value, $key)
-    {
-        if ($key === 'course_code') {
-            $this->newCourseCode = '';
-            $courseCode = strtoupper(trim($value));
-            $course = Course::where('code', '=', $courseCode)->first();
-            if (!$course) {
-                $this->newCourseCode = $courseCode;
-            }
-        }
-    }
     public function requestNewSoftware(?int $courseId = null)
     {
         $this->reset('newSoftware');
@@ -125,7 +112,6 @@ class HomePage extends Component
         $userId = 1;
         $newSoftware = $this->newSoftware;
         $newSoftware['created_by'] = $userId;
-        $newSoftware['os'] = implode(',', $newSoftware['os']);
         $academicSession = AcademicSession::where('is_default', true)->first();
         $newSoftware['academic_session_id'] = $academicSession->id;
         $software = Software::create(Arr::except($newSoftware, ['course_code']));

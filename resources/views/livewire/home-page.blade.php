@@ -70,7 +70,7 @@
                         <flux:row>
                             <flux:cell>{{ $software->name }}</flux:cell>
                             <flux:cell>{{ $software->version }}</flux:cell>
-                            <flux:cell>{{ $software->os }}</flux:cell>
+                            <flux:cell>{{ $software->operatingSystems }}</flux:cell>
                             <flux:cell>{{ $software->location }}</flux:cell>
                             <flux:cell>
                                 <flux:dropdown>
@@ -116,7 +116,7 @@
                     <flux:autocomplete.item>{{ $courseCode }}</flux:autocomplete.item>
                 @endforeach
             </flux:autocomplete>
-            @if ($newCourseCode)
+            @if ($newSoftware['course_code'] && !$courseCodes->contains(strtoupper(trim($newSoftware['course_code']))))
                 <flux:description class="-mt-2">(New course code will be created)</flux:description>
             @endif
 

@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('version')->nullable();
-            $table->string('os')->nullable();
-            $table->string('building')->nullable();
+            $table->json('os')->nullable();
+            $table->json('building')->nullable();
             $table->string('lab')->nullable();
             $table->text('config')->nullable();
             $table->text('notes')->nullable();

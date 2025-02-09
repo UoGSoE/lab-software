@@ -14,6 +14,11 @@ class Software extends Model
 
     protected $fillable = ['name', 'version', 'course_code', 'os', 'building', 'lab', 'notes', 'config', 'is_new', 'is_free', 'created_by', 'academic_session_id'];
 
+    protected $casts = [
+        'building' => 'array',
+        'os' => 'array',
+    ];
+
     public function courses(): BelongsToMany
     {
         return $this->belongsToMany(Course::class);
@@ -26,6 +31,15 @@ class Software extends Model
 
     public function getLocationAttribute(): string
     {
-        return $this->building . ($this->lab ? ' - ' . $this->lab : '');
+        $location = '';
+        foreach ($this->building ?? [] as $building) {
+            $location = $location . $building . ', ';
+        }
+        return $location . ($this->lab ? ' - ' . $this->lab : '');
+    }
+
+    public function getOperatingSystemsAttribute(): string
+    {
+        return implode(', ', $this->os ?? []);
     }
 }
