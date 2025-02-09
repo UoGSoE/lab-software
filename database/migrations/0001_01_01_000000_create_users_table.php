@@ -19,7 +19,9 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->boolean('is_admin')->default(false);
             $table->boolean('is_staff')->default(false);
+            $table->date('signed_off_at')->nullable();
             $table->string('school')->nullable();
+            $table->foreignId('academic_session_id')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();

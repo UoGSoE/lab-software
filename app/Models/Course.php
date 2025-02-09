@@ -15,4 +15,9 @@ class Course extends Model
     {
         return $this->belongsToMany(Software::class);
     }
+
+    public function users(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class)->withTimestamps();
+    }
 }

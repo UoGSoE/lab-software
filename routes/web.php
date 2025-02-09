@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
+auth()->loginUsingId(1);
 Route::get('/', \App\Livewire\HomePage::class)->name('home');
 Route::get('/college-wide', \App\Livewire\CollegeWide::class)->name('college-wide');
 Route::get('/exporter', \App\Livewire\Exporter::class)->name('exporter');

@@ -3,14 +3,11 @@
         <div class="flex flex-row gap-2 items-center">
             <div>
                 <flux:heading size="xl">COSE teaching software</flux:heading>
-                <flux:subheading>Academic session 2025/2026</flux:subheading>
+                <flux:subheading>Session {{ $academicSession->name }}</flux:subheading>
             </div>
         </div>
         <div class="flex flex-col md:flex-row gap-2 items-center">
-            <flux:button variant="primary">All good!</flux:button>
-            <flux:modal.trigger name="add-software">
-                <flux:button icon="plus" variant="filled">Request new software</flux:button>
-            </flux:modal.trigger>
+            <flux:button icon="plus" variant="filled" wire:click="requestNewSoftware(null)">Request new software</flux:button>
         </div>
     </div>
 
@@ -28,7 +25,7 @@
             <flux:option value="CHEM">Chemistry</flux:option>
         </flux:select>
 
-        <flux:input wire:model.live="filters.course" label="Course" placeholder="Eg, ENG1234" />
+        <flux:input wire:model.live="filters.course" label="Course" placeholder="Eg, ENG1234" autofocus />
 
         <flux:input wire:model.live="filters.software" label="Software" placeholder="Eg, StarCCM" />
     </div>
@@ -37,9 +34,26 @@
 
     @foreach ($courses as $course)
         <flux:card class="space-y-6 mt-6" wire:key="course-{{ $course->id }}">
-            <div>
-                <flux:heading size="lg">{{ $course->code }}</flux:heading>
-                <flux:subheading>{{ $course->title }}</flux:subheading>
+            <div class="flex flex-row gap-2 justify-between">
+                <div>
+                    <flux:heading size="lg">{{ $course->code }}</flux:heading>
+                    <flux:subheading>{{ $course->title }}</flux:subheading>
+                </div>
+                <div class="flex flex-row gap-2 items-center">
+                    <flux:button
+                        :variant="$course->signed_off ? 'ghost' : 'filled'"
+                        icon="shield-check"
+                        wire:click="signOff({{ $course->id }})"
+                        :disabled="$course->signed_off"
+                    >
+                        @if ($course->signed_off)
+                            Signed off
+                        @else
+                            Sign off
+                        @endif
+                    </flux:button>
+                    <flux:button variant="filled" icon="plus" wire:click="requestNewSoftware({{ $course->id }})">Request new software</flux:button>
+                </div>
             </div>
 
             <div>

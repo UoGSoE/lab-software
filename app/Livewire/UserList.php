@@ -12,6 +12,7 @@ class UserList extends Component
 
     public $search = '';
     public $onlyAdmins = false;
+    public $onlyMissing = false;
 
     public function render()
     {
@@ -23,13 +24,16 @@ class UserList extends Component
     public function getUsers()
     {
         $search = trim($this->search);
-        return User::orderBy('surname')
+        return User::orderBy('surname')->with('courses')
             ->when($search, function ($query) use ($search) {
                 $query->where('surname', 'like', '%' . $search . '%')
                     ->orWhere('forenames', 'like', '%' . $search . '%');
             })
             ->when($this->onlyAdmins, function ($query) {
                 $query->where('is_admin', true);
+            })
+            ->when($this->onlyMissing, function ($query) {
+                $query->whereDoesntHave('courses');
             })
             ->paginate(100);
     }
@@ -40,6 +44,11 @@ class UserList extends Component
     }
 
     public function updatedOnlyAdmins()
+    {
+        $this->resetPage();
+    }
+
+    public function updatedOnlyMissing()
     {
         $this->resetPage();
     }

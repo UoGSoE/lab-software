@@ -8,7 +8,6 @@
             <flux:column sortable :sorted="$sortBy === 'name'" :direction="$sortDirection" wire:click="sort('name')" width="50%">Package</flux:column>
             <flux:column sortable width="10%">Version</flux:column>
             <flux:column sortable width="10%">O/S</flux:column>
-            <flux:column sortable :sorted="$sortBy === 'location'" :direction="$sortDirection" wire:click="sort('location')" width="20%">Location</flux:column>
             <flux:column width="10%"></flux:column>
         </flux:columns>
 
@@ -17,7 +16,6 @@
                 <flux:cell>{{ $package->name }}</flux:cell>
                 <flux:cell>{{ $package->version }}</flux:cell>
                 <flux:cell>{{ $package->os }}</flux:cell>
-                <flux:cell>{{ $package->location }}</flux:cell>
                 <flux:cell>
                     <flux:dropdown>
                         <flux:button icon="ellipsis-horizontal" variant="ghost" inset />
