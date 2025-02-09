@@ -31,6 +31,7 @@ class HomePage extends Component
         'course_code' => '',
     ];
 
+    public string $newCourseCode = '';
     public array $filters = [
         'school' => '',
         'course' => '',
@@ -83,6 +84,17 @@ class HomePage extends Component
         // request()->user()->update(['school' => $this->filters['school']]);
     }
 
+    public function updatingNewSoftware($value, $key)
+    {
+        if ($key === 'course_code') {
+            $this->newCourseCode = '';
+            $courseCode = strtoupper(trim($value));
+            $course = Course::where('code', '=', $courseCode)->first();
+            if (!$course) {
+                $this->newCourseCode = $courseCode;
+            }
+        }
+    }
     public function requestNewSoftware(?int $courseId = null)
     {
         $this->reset('newSoftware');
@@ -107,14 +119,28 @@ class HomePage extends Component
             'newSoftware.lab' => 'nullable|max:255',
             'newSoftware.config' => 'nullable|max:255',
             'newSoftware.notes' => 'nullable|max:255',
-            'newSoftware.course_code' => 'required|max:255',
+            'newSoftware.course_code' => 'required|max:255|regex:/^[a-zA-Z]+[0-9]+$/',
         ]);
 
         $userId = 1;
         $newSoftware = $this->newSoftware;
         $newSoftware['created_by'] = $userId;
         $newSoftware['os'] = implode(',', $newSoftware['os']);
-        Software::create(Arr::except($newSoftware, ['course_code']));
+        $academicSession = AcademicSession::where('is_default', true)->first();
+        $newSoftware['academic_session_id'] = $academicSession->id;
+        $software = Software::create(Arr::except($newSoftware, ['course_code']));
+
+        $courseCode = strtoupper(trim($this->newSoftware['course_code']));
+        $course = Course::where('code', '=', $courseCode)->first();
+        if (!$course) {
+            $course = Course::create([
+                'code' => $courseCode,
+                'title' => $courseCode,
+                'academic_session_id' => $academicSession->id,
+            ]);
+        }
+
+        $course->software()->attach($software->id);
 
         $this->modal('add-software')->close();
 

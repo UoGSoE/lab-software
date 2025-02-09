@@ -18,7 +18,7 @@ class AcademicSessionFactory extends Factory
     {
         return [
             'name' => now()->year . '-' . now()->year + 1,
-            'is_default' => false,
+            'is_default' => true,
         ];
     }
 }

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->string('code');
-            $table->foreignId('academic_session')->constrained('academic_sessions');
+            $table->foreignId('academic_session_id')->constrained('academic_sessions');
             $table->timestamps();
         });
     }

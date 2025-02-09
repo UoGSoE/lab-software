@@ -23,7 +23,7 @@ return new class extends Migration
             $table->boolean('is_new')->default(false);
             $table->boolean('is_free')->default(false);
             $table->foreignId('created_by')->constrained('users');
-            $table->foreignId('academic_session')->constrained('academic_sessions');
+            $table->foreignId('academic_session_id')->constrained('academic_sessions');
             $table->timestamps();
         });
     }

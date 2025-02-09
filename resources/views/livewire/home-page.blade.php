@@ -111,11 +111,14 @@
                 <flux:description>(Leave blank if you don't know or it doesn't matter)</flux:description>
             </flux:field>
 
-            <flux:autocomplete wire:model="newSoftware.course_code" label="Course code (required)" placeholder="Eg, ENG1234" required>
+            <flux:autocomplete wire:model.blur="newSoftware.course_code" label="Course code (required)" placeholder="Eg, ENG1234" required>
                 @foreach ($courseCodes as $courseCode)
                     <flux:autocomplete.item>{{ $courseCode }}</flux:autocomplete.item>
                 @endforeach
             </flux:autocomplete>
+            @if ($newCourseCode)
+                <flux:description class="-mt-2">(New course code will be created)</flux:description>
+            @endif
 
             <flux:checkbox.group wire:model="newSoftware.os" label="Operating System">
                 <flux:checkbox label="Windows" value="Windows" />

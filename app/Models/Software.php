@@ -12,7 +12,7 @@ class Software extends Model
     /** @use HasFactory<\Database\Factories\SoftwareFactory> */
     use HasFactory;
 
-    protected $fillable = ['name', 'version', 'course_code', 'os', 'building', 'lab', 'notes', 'config', 'is_new', 'is_free', 'created_by', 'academic_session'];
+    protected $fillable = ['name', 'version', 'course_code', 'os', 'building', 'lab', 'notes', 'config', 'is_new', 'is_free', 'created_by', 'academic_session_id'];
 
     public function courses(): BelongsToMany
     {

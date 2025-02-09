@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\User;
+use App\Models\AcademicSession;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -28,6 +29,7 @@ class SoftwareFactory extends Factory
             'config' => rand(1, 10) == 9 ? fake()->sentence() : null,
             'notes' => rand(1, 10) == 9 ? fake()->sentence() : null,
             'created_by' => User::factory(),
+            'academic_session_id' => AcademicSession::factory(),
             'is_new' => false,
             'is_free' => false,
         ];

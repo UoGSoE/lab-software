@@ -11,6 +11,8 @@ class Course extends Model
     /** @use HasFactory<\Database\Factories\CourseFactory> */
     use HasFactory;
 
+    protected $fillable = ['title', 'code', 'academic_session_id'];
+
     public function software(): BelongsToMany
     {
         return $this->belongsToMany(Software::class);

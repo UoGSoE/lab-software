@@ -37,11 +37,11 @@ class TestDataSeeder extends Seeder
         User::take(300)->inRandomOrder()->get()->each(function ($user) use ($session) {
             Software::factory()->count(rand(1, 3))->create([
                 'created_by' => $user->id,
-                'academic_session' => $session->id,
+                'academic_session_id' => $session->id,
             ]);
         });
 
-        Course::factory()->count(1000)->create(['academic_session' => $session->id]);
+        Course::factory()->count(1000)->create(['academic_session_id' => $session->id]);
         foreach (Course::all() as $course) {
             $course->software()->attach(Software::inRandomOrder()->limit(rand(1, 3))->pluck('id'));
         }
