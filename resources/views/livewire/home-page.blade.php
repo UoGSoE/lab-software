@@ -111,31 +111,18 @@
                 <flux:description>(Leave blank if you don't know or it doesn't matter)</flux:description>
             </flux:field>
 
-            <flux:autocomplete wire:model.blur="newSoftware.course_code" label="Course code (required)" placeholder="Eg, ENG1234" required>
-                @foreach ($courseCodes as $courseCode)
-                    <flux:autocomplete.item>{{ $courseCode }}</flux:autocomplete.item>
-                @endforeach
-            </flux:autocomplete>
-            @if ($newSoftware['course_code'] && !$courseCodes->contains(strtoupper(trim($newSoftware['course_code']))))
-                <flux:description class="-mt-2">(New course code will be created)</flux:description>
-            @endif
-
             <flux:checkbox.group wire:model="newSoftware.os" label="Operating System">
                 <flux:checkbox label="Windows" value="Windows" />
                 <flux:checkbox label="Mac" value="Mac" />
                 <flux:checkbox label="Linux" value="Linux" />
             </flux:checkbox.group>
 
-            <flux:checkbox.group wire:model="newSoftware.building" label="Building">
-                <flux:checkbox label="Engineering" value="Engineering" />
-                <flux:checkbox label="Physics" value="Physics" />
-                <flux:checkbox label="Maths" value="Maths" />
-                <flux:checkbox label="Chemistry" value="Chemistry" />
-                <flux:checkbox label="Geoscience" value="Geoscience" />
-                <flux:checkbox label="Computer Science" value="Computer Science" />
-            </flux:checkbox.group>
+            <flux:input wire:model.blur="newSoftware.course_code" label="Course code (required)" placeholder="Eg, ENG1234" required />
+            @if ($newSoftware['course_code'] && !$courseCodes->contains(strtoupper(trim($newSoftware['course_code']))))
+                <flux:description class="-mt-2">(New course code will be created)</flux:description>
+            @endif
 
-            <flux:input label="Lab" placeholder="Eg, 100" wire:model="newSoftware.lab" />
+            <flux:input label="Lab (if known)" placeholder="Eg, 100" wire:model="newSoftware.lab" />
 
             <flux:textarea label="Configuration" placeholder="Any additional configuration you want to add, plugins, etc." wire:model="newSoftware.config" />
 

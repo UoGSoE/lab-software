@@ -15,7 +15,7 @@
             <flux:row>
                 <flux:cell>{{ $package->name }}</flux:cell>
                 <flux:cell>{{ $package->version }}</flux:cell>
-                <flux:cell>{{ $package->os }}</flux:cell>
+                <flux:cell>{{ $package->operatingSystems }}</flux:cell>
                 <flux:cell>
                     <flux:dropdown>
                         <flux:button icon="ellipsis-horizontal" variant="ghost" inset />

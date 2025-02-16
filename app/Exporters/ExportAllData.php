@@ -51,9 +51,9 @@ class ExportAllData
                 $cells[] = Cell::fromValue($course->code);
                 $cells[] = Cell::fromValue($software->name);
                 $cells[] = Cell::fromValue($software->version);
-                $cells[] = Cell::fromValue($software->os);
+                $cells[] = Cell::fromValue(implode(', ', $software->os ?? []));
                 $cells[] = Cell::fromValue($software->createdBy?->email);
-                $cells[] = Cell::fromValue($software->building);
+                $cells[] = Cell::fromValue(implode(', ', $software->building ?? []));
                 $cells[] = Cell::fromValue($software->lab);
                 $cells[] = Cell::fromValue($software->is_new ? 'Yes' : 'No');
                 $cells[] = Cell::fromValue($software->is_free ? 'Yes' : 'No');
