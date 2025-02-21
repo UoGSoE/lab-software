@@ -122,3 +122,45 @@ describe('requesting new software', function () {
         expect(Course::where('code', 'TEST9999')->exists())->toBeTrue();
     });
 });
+
+describe('signing off on software', function () {
+    beforeEach(function () {
+        $this->software = Software::factory()->create(['academic_session_id' => $this->session->id]);
+        $this->course = Course::factory()->create(['academic_session_id' => $this->session->id]);
+        $this->software->courses()->attach($this->course->id);
+    });
+
+    it('allows staff to sign off the software for a course', function () {
+        actingAs($this->user);
+        livewire(HomePage::class)
+            ->call('signOff', $this->course->id)
+            ->assertHasNoErrors();
+
+        expect($this->course->users()->count())->toBe(1);
+        expect($this->course->users()->first()->id)->toBe($this->user->id);
+    });
+});
+
+describe('interacting with the existing software', function () {
+    beforeEach(function () {
+        $this->software = Software::factory()->create(['academic_session_id' => $this->session->id]);
+        $this->course = Course::factory()->create(['academic_session_id' => $this->session->id]);
+        $this->software->courses()->attach($this->course->id);
+    });
+
+    it('allows staff to see more details about the software', function () {
+        actingAs($this->user);
+        livewire(HomePage::class)
+            ->call('viewSoftwareDetails', $this->software->id)
+            ->assertSee($this->software->name)
+            ->assertSee($this->course->code)
+            ->assertSee($this->software->config)
+            ->assertSee($this->software->notes)
+            ->assertSee($this->software->os)
+            ->assertSee($this->software->building)
+            ->assertSee($this->software->lab)
+            ->assertSee($this->software->version)
+            ->assertSee($this->software->created_by?->name)
+            ->assertSee($this->software->created_at->format('d/m/Y'));
+    });
+});

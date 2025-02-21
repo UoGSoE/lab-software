@@ -19,6 +19,7 @@ class HomePage extends Component
     use WithPagination;
 
     public string $currentSessionName = '';
+    public ?Software $softwareDetails = null;
 
     public array $newSoftware = [
         'os' => ['Windows'],
@@ -143,5 +144,11 @@ class HomePage extends Component
         $course->users()->attach(request()->user()->id);
 
         Flux::toast("{$course->code} signed off!", variant: 'success');
+    }
+
+    public function viewSoftwareDetails(int $softwareId)
+    {
+        $this->softwareDetails = Software::findOrFail($softwareId);
+        $this->modal('software-details')->show();
     }
 }
