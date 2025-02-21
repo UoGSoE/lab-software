@@ -18,6 +18,8 @@ class HomePage extends Component
 {
     use WithPagination;
 
+    public string $currentSessionName = '';
+
     public array $newSoftware = [
         'os' => ['Windows'],
         'name' => '',
@@ -40,18 +42,18 @@ class HomePage extends Component
     public function mount()
     {
         // $this->filters['school'] = request()->user()->school;
+        $this->currentSessionName = AcademicSession::getDefault()?->name;
     }
 
     public function render()
     {
-        $academicSession = AcademicSession::where('is_default', true)->first();
         $courses = $this->getFilteredCourses();
         $courseCodes = $courses->pluck('code')->unique()->sort();
         // $softwareTitles = $courses->map(fn ($course) => $course->software->map(fn ($software) => $software->name))->unique();
         return view('livewire.home-page', [
             'courses' => $courses,
             'courseCodes' => $courseCodes,
-            'academicSession' => $academicSession,
+            'academicSession' => $this->currentSessionName,
         ]);
     }
 

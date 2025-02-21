@@ -64,7 +64,7 @@ class TestDataSeeder extends Seeder
             ],
             [
                 'name' => 'Geoscience',
-                'course_prefix' => 'GEOS',
+                'course_prefix' => 'GES',
             ],
             [
                 'name' => 'Computer Science',

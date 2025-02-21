@@ -3,7 +3,7 @@
 
     <flux:separator class="mt-6 mb-6" />
 
-    <div class="grid auto-cols-max grid-flow-col gap-4">
+    <div class="grid auto-cols-max grid-flow-row md:grid-flow-col gap-4">
         <div class="">
             <flux:card>
                 <form class="space-y-6">
@@ -20,11 +20,13 @@
             </flux:card>
         </div>
 
-        <div class="">
+        <div class="min-w-[300px]">
             <flux:card class="space-y-6">
                 <div class="flex flex-row justify-between items-center">
                     <flux:heading size="lg">Schools</flux:heading>
-                    <flux:button type="button" icon="plus">Add school</flux:button>
+                    <flux:modal.trigger name="create-new-school">
+                        <flux:button type="button" icon="plus"></flux:button>
+                    </flux:modal.trigger>
                 </div>
 
                 <ul class="space-y-2">
@@ -35,16 +37,53 @@
             </flux:card>
         </div>
 
-        <div class="">
-            <flux:card>
-                <flux:heading size="lg">Academic sessions</flux:heading>
-                <flux:button type="button" icon="plus">Add academic session</flux:button>
+        <div class="min-w-[300px]">
+            <flux:card class="space-y-6">
+                <div class="flex flex-row justify-between items-center">
+                    <flux:heading size="lg">Academic sessions</flux:heading>
+                    <flux:modal.trigger name="create-new-session">
+                        <flux:button type="button" icon="plus"></flux:button>
+                    </flux:modal.trigger>
+                </div>
+
                 <ul class="space-y-2">
                     @foreach ($academicSessions as $academicSession)
-                        <li>{{ $academicSession->name }} @if ($academicSession->is_default) <flux:badge>Default</flux:badge>@endif</li>
+                        <li>{{ $academicSession->name }} @if ($academicSession->is_default) <flux:badge inset="top bottom">Default</flux:badge>@endif</li>
                     @endforeach
                 </ul>
             </flux:card>
         </div>
     </div>
+
+    <flux:modal name="create-new-session" variant="flyout" class="space-y-6">
+        <form wire:submit="createNewSession" class="space-y-6">
+            <flux:heading>Create new academic session</flux:heading>
+
+            <div class="grid grid-cols-2 gap-4">
+                <flux:input type="number" wire:model="newSessionNameStart" label="Start year" required />
+                <flux:input type="number" wire:model="newSessionNameEnd" label="End year" required />
+            </div>
+
+            <flux:checkbox wire:model="newSessionIsDefault" label="Set as default session?" />
+
+            <div class="flex flex-row justify-end gap-2">
+                <flux:button variant="primary" type="submit">Create</flux:button>
+                <flux:button type="button" x-on:click="$flux.modal('create-new-session').close()">Cancel</flux:button>
+            </div>
+        </form>
+    </flux:modal>
+
+    <flux:modal name="create-new-school" variant="flyout" class="space-y-6">
+        <form wire:submit="createNewSchool" class="space-y-6">
+            <flux:heading>Create new school</flux:heading>
+
+            <flux:input type="text" label="School name" name="name" wire:model="newSchoolName" required />
+            <flux:input type="text" label="Course prefix" description="(Eg, 'ENG', 'MATH')" name="course_prefix" wire:model="newSchoolCoursePrefix" required />
+
+            <div class="flex flex-row justify-end gap-2">
+                <flux:button variant="primary" type="submit">Create</flux:button>
+                <flux:button type="button" x-on:click="$flux.modal('create-new-school').close()">Cancel</flux:button>
+            </div>
+        </form>
+    </flux:modal>
 </div>

@@ -3,7 +3,7 @@
         <div class="flex flex-row gap-2 items-center">
             <div>
                 <flux:heading size="xl">COSE teaching software</flux:heading>
-                <flux:subheading>Session {{ $academicSession->name }}</flux:subheading>
+                <flux:subheading class="text-center md:text-left">Session {{ $academicSession }}</flux:subheading>
             </div>
         </div>
         <div class="flex flex-col md:flex-row gap-2 items-center">
@@ -34,17 +34,32 @@
 
     @foreach ($courses as $course)
         <flux:card class="space-y-6 mt-6" wire:key="course-{{ $course->id }}">
-            <div class="flex flex-row gap-2 justify-between">
-                <div>
-                    <flux:heading size="lg">{{ $course->code }}</flux:heading>
+            <div class="flex flex-col md:flex-row gap-2 justify-between">
+                <div class="space-y-6">
+                    <div class="flex flex-row gap-2 justify-between items-center">
+                        <flux:heading size="lg">{{ $course->code }}</flux:heading>
+                        <flux:button
+                            :variant="$course->signed_off ? 'ghost' : 'filled'"
+                            wire:click="signOff({{ $course->id }})"
+                            :disabled="$course->signed_off"
+                            class="block md:hidden"
+                            inset
+                        >
+                        @if ($course->signed_off)
+                            Signed off
+                        @else
+                            Sign off
+                        @endif
+                        </flux:button>
+                    </div>
                     <flux:subheading>{{ $course->title }}</flux:subheading>
                 </div>
-                <div class="flex flex-row gap-2 items-center">
+                <div class="flex flex-col md:flex-row gap-2 items-center">
                     <flux:button
                         :variant="$course->signed_off ? 'ghost' : 'filled'"
-                        icon="shield-check"
                         wire:click="signOff({{ $course->id }})"
                         :disabled="$course->signed_off"
+                        class="hidden md:block"
                     >
                         @if ($course->signed_off)
                             Signed off
@@ -61,8 +76,8 @@
                     <flux:columns>
                         <flux:column width="50%">Package</flux:column>
                         <flux:column width="10%">Version</flux:column>
-                        <flux:column width="10%">O/S</flux:column>
-                        <flux:column width="20%">Location</flux:column>
+                        <flux:column class="hidden md:table-cell" width="10%">O/S</flux:column>
+                        <flux:column class="hidden md:table-cell" width="20%">Lab</flux:column>
                         <flux:column width="10%"></flux:column>
                     </flux:columns>
 
@@ -70,8 +85,8 @@
                         <flux:row>
                             <flux:cell>{{ $software->name }}</flux:cell>
                             <flux:cell>{{ $software->version }}</flux:cell>
-                            <flux:cell>{{ $software->operatingSystems }}</flux:cell>
-                            <flux:cell>{{ $software->location }}</flux:cell>
+                            <flux:cell class="hidden md:table-cell">{{ $software->operatingSystems }}</flux:cell>
+                            <flux:cell class="hidden md:table-cell">{{ $software->location }}</flux:cell>
                             <flux:cell>
                                 <flux:dropdown>
                                     <flux:button icon="ellipsis-horizontal" variant="ghost" inset />
@@ -115,6 +130,7 @@
                 <flux:checkbox label="Windows" value="Windows" />
                 <flux:checkbox label="Mac" value="Mac" />
                 <flux:checkbox label="Linux" value="Linux" />
+                <flux:checkbox label="BSD" value="BSD" />
             </flux:checkbox.group>
 
             <flux:input wire:model.blur="newSoftware.course_code" label="Course code (required)" placeholder="Eg, ENG1234" required />
@@ -122,7 +138,7 @@
                 <flux:description class="-mt-2">(New course code will be created)</flux:description>
             @endif
 
-            <flux:input label="Lab (if known)" placeholder="Eg, 100" wire:model="newSoftware.lab" />
+            <flux:input label="Lab (if known)" placeholder="Eg, Rankine 329" wire:model="newSoftware.lab" />
 
             <flux:textarea label="Configuration" placeholder="Any additional configuration you want to add, plugins, etc." wire:model="newSoftware.config" />
 

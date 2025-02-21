@@ -1,0 +1,13 @@
+---
+description: 
+globs: 
+---
+
+# Project technology stack
+
+- The main framework is Laravel version 11
+- It also uses Livewire version 3
+- And the new 'Flux' component library in the front-end blade templates
+- We use `Pest` for our tests and not PHPUnit
+- Please always follow Laravel conventions and features
+

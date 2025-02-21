@@ -31,6 +31,8 @@ class Software extends Model
 
     public function getLocationAttribute(): string
     {
+        // TODO: this might be redundant - waiting on feedback
+        return (string)$this->lab;
         $location = '';
         foreach ($this->building ?? [] as $building) {
             $location = $location . $building . ', ';
