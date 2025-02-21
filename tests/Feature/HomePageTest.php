@@ -25,57 +25,100 @@ it('can be rendered', function () {
                           ->assertSee('Test Software');
 });
 
-test('we can filter in various ways', function () {
-    $course1 = Course::factory()->create(['academic_session_id' => $this->session->id, 'code' => 'TEST1234']);
-    $course2 = Course::factory()->create(['academic_session_id' => $this->session->id, 'code' => 'TEST2345']);
-    $software1 = Software::factory()->create(['name' => 'Test Software QQQQQQ', 'academic_session_id' => $this->session->id]);
-    $software2 = Software::factory()->create(['name' => 'Test Software ZZZZZZ', 'academic_session_id' => $this->session->id]);
-    $software1->courses()->attach($course1->id);
-    $software2->courses()->attach($course2->id);
+describe('we can filter in various ways', function () {
+    beforeEach(function () {
+        $this->course1 = Course::factory()->create(['academic_session_id' => $this->session->id, 'code' => 'TEST1234']);
+        $this->course2 = Course::factory()->create(['academic_session_id' => $this->session->id, 'code' => 'BEST2345']);
+        $this->software1 = Software::factory()->create(['name' => 'Test Software QQQQQQ', 'academic_session_id' => $this->session->id]);
+        $this->software2 = Software::factory()->create(['name' => 'Test Software ZZZZZZ', 'academic_session_id' => $this->session->id]);
+        $this->software1->courses()->attach($this->course1->id);
+        $this->software2->courses()->attach($this->course2->id);
+    });
 
-    actingAs($this->user)->livewire(HomePage::class)
-        ->assertSee($course1->code)
-        ->assertSee($course2->code)
-        ->assertSee('Test Software QQQQQQ')
-        ->assertSee('Test Software ZZZZZZ')
-        ->set('filters.course', $course1->code)
-        ->assertSee('Test Software QQQQQQ')
-        ->assertDontSee('Test Software ZZZZZZ')
-        ->assertSee($course1->code)
-        ->assertDontSee($course2->code)
-        ->set('filters.course', '')
-        ->set('filters.software', $software1->name)
-        ->assertSee($course1->code)
-        ->assertDontSee($course2->code)
-        ->assertSee($software1->name)
-        ->assertDontSee($software2->name);
+    it('can filter by course', function () {
+        actingAs($this->user)->livewire(HomePage::class)
+            ->assertSee($this->course1->code)
+            ->assertSee($this->course2->code)
+            ->assertSee('Test Software QQQQQQ')
+            ->assertSee('Test Software ZZZZZZ')
+            ->set('filters.course', $this->course1->code)
+            ->assertSee('Test Software QQQQQQ')
+            ->assertDontSee('Test Software ZZZZZZ')
+            ->set('filters.course', '')
+            ->assertSee('Test Software QQQQQQ')
+            ->assertSee('Test Software ZZZZZZ');
+    });
+
+    it('can filter by software', function () {
+        actingAs($this->user);
+        livewire(HomePage::class)
+            ->set('filters.software', $this->software1->name)
+            ->assertSee($this->course1->code)
+            ->assertDontSee($this->course2->code)
+            ->assertSee($this->software1->name)
+            ->assertDontSee($this->software2->name)
+            ->set('filters.software', '')
+            ->assertSee($this->course1->code)
+            ->assertSee($this->course2->code)
+            ->assertSee($this->software1->name)
+            ->assertSee($this->software2->name);
+    });
+
+    it('can filter by school', function () {
+        actingAs($this->user);
+        livewire(HomePage::class)
+            ->set('filters.school', 'TEST')
+            ->assertSee($this->course1->code)
+            ->assertDontSee($this->course2->code)
+            ->set('filters.school', 'BEST')
+            ->assertDontSee($this->course1->code)
+            ->assertSee($this->course2->code)
+            ->set('filters.school', '')
+            ->assertSee($this->course1->code)
+            ->assertSee($this->course2->code);
+    });
 });
 
 describe('requesting new software', function () {
+    beforeEach(function () {
+        $this->course = Course::factory()->create(['academic_session_id' => $this->session->id, 'code' => 'TEST1234']);
+        $this->software = Software::factory()->create(['name' => 'Test Software', 'academic_session_id' => $this->session->id]);
+        $this->software->courses()->attach($this->course->id);
+    });
 
     it('works for the happy path', function () {
-        $course = Course::factory()->create(['academic_session_id' => $this->session->id]);
-        $software = Software::factory()->create(['name' => 'Test Software', 'academic_session_id' => $this->session->id]);
-        $software->courses()->attach($course->id);
         actingAs($this->user);
             livewire(HomePage::class)
-            ->set('newSoftware.name', 'Test Software')
-            ->set('newSoftware.course_code', $course->code)
+            ->set('newSoftware.name', 'Test Software 2')
+            ->set('newSoftware.course_code', $this->course->code)
             ->call('addSoftware')
             ->assertHasNoErrors();
 
         expect(Software::where('name', 'Test Software')->exists())->toBeTrue();
+        expect(Software::where('name', 'Test Software 2')->exists())->toBeTrue();
+        expect(Software::where('name', 'Test Software 2')->first()->courses()->count())->toBe(1);
+        expect(Software::where('name', 'Test Software 2')->first()->courses()->first()->id)->toBe($this->course->id);
     });
 
     it('flags missing required fields', function () {
-        $course = Course::factory()->create(['academic_session_id' => $this->session->id]);
-        $software = Software::factory()->create(['name' => 'Test Software', 'academic_session_id' => $this->session->id]);
-        $software->courses()->attach($course->id);
         actingAs($this->user);
             livewire(HomePage::class)
             ->set('newSoftware.name', '')
             ->set('newSoftware.course_code', '')
             ->call('addSoftware')
             ->assertHasErrors(['newSoftware.name', 'newSoftware.course_code']);
+
+        expect(Software::where('name', '')->exists())->toBeFalse();
+    });
+
+    it('allows the user to create a new course', function () {
+        actingAs($this->user);
+        livewire(HomePage::class)
+            ->set('newSoftware.name', 'Test Software 3')
+            ->set('newSoftware.course_code', 'TEST9999')
+            ->call('addSoftware')
+            ->assertHasNoErrors();
+
+        expect(Course::where('code', 'TEST9999')->exists())->toBeTrue();
     });
 });
