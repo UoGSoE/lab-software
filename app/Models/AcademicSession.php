@@ -45,4 +45,23 @@ class AcademicSession extends Model
     {
         return $this->hasMany(Software::class);
     }
+
+    public function copyForwardTo(AcademicSession $newSession): void
+    {
+        foreach (User::where('academic_session_id', $this->id)->get() as $user) {
+            $newUser = $user->replicate();
+            $newUser->academic_session_id = $newSession->id;
+            $newUser->save();
+        }
+        foreach (Software::where('academic_session_id', $this->id)->get() as $software) {
+            $newSoftware = $software->replicate();
+            $newSoftware->academic_session_id = $newSession->id;
+            $newSoftware->save();
+        }
+        foreach (Course::where('academic_session_id', $this->id)->get() as $course) {
+            $newCourse = $course->replicate();
+            $newCourse->academic_session_id = $newSession->id;
+            $newCourse->save();
+        }
+    }
 }

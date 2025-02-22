@@ -57,10 +57,10 @@ class NotifySystemOpen extends Command
             return 0;
         }
 
-        $users = User::forAcademicSession($academicSession)->get();
+        $users = User::forAcademicSession($academicSession)->with('courses.software')->get();
 
         foreach ($users as $user) {
-            Mail::to($user)->later(now()->addMinutes(rand(1, 30)), new SystemOpen());
+            Mail::to($user)->later(now()->addMinutes(rand(1, 30)), new SystemOpen($user));
         }
     }
 }

@@ -19,20 +19,6 @@ class CopyForward implements ShouldQueue
 
     public function handle(): void
     {
-        foreach (User::where('academic_session_id', $this->old->id)->get() as $user) {
-            $newUser = $user->replicate();
-            $newUser->academic_session_id = $this->new->id;
-            $newUser->save();
-        }
-        foreach (Software::where('academic_session_id', $this->old->id)->get() as $software) {
-            $newSoftware = $software->replicate();
-            $newSoftware->academic_session_id = $this->new->id;
-            $newSoftware->save();
-        }
-        foreach (Course::where('academic_session_id', $this->old->id)->get() as $course) {
-            $newCourse = $course->replicate();
-            $newCourse->academic_session_id = $this->new->id;
-            $newCourse->save();
-        }
+        $this->old->copyForwardTo($this->new);
     }
 }

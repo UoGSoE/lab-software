@@ -203,6 +203,7 @@
                 </div>
             @endif
         </flux:card>
+        @endif
     </flux:modal>
 
 </div>

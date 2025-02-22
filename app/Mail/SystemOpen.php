@@ -20,14 +20,16 @@ class SystemOpen extends Mailable
 
     public function __construct(User $user)
     {
-        # NOTE: assumes the user has courses.software eager loaded
+        // NOTE: assumes the user has courses.software eager loaded
         $this->user = $user;
-        $this->softwareList = $user->courses->filter(function ($course) {
-            return $course->software->count() > 0;
-        })->mapWithKeys(function ($course) {
-            # we end up with a collection of course codes, each with a collection of software names
-            return [$course->code => $course->software->pluck('name')];
-        });
+        // build a collection of course codes, each with a collection of software names & versions
+        $this->softwareList = $user->courses->reject(fn ($course) => $course->software->isEmpty())
+            ->mapWithKeys(function ($course) {
+                $software = $course->software->map(function ($software) {
+                    return $software->name . ($software->version ? ' version ' . $software->version : '');
+                });
+                return [$course->code => $software];
+            });
     }
 
     public function envelope(): Envelope

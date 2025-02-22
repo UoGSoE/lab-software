@@ -44,6 +44,7 @@ class HomePage extends Component
     {
         // $this->filters['school'] = request()->user()->school;
         $this->currentSessionName = AcademicSession::getDefault()?->name;
+        $this->softwareDetails = new Software();
     }
 
     public function render()

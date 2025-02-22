@@ -18,10 +18,19 @@ class TestDataSeeder extends Seeder
     public function run(): void
     {
         Cache::forget('total_user_count');
+        // try and create a plausible academic year
         $thisYear = now()->year;
-        $nextYear = $thisYear + 1;
-        $session = AcademicSession::create([
-            'name' => $thisYear . '-' . $nextYear,
+        $thisMonth = now()->month;
+        if ($thisMonth < 7) {
+            $thisYear = $thisYear - 1;
+        }
+
+        $oldSession = AcademicSession::create([
+            'name' => $thisYear - 1 . '-' . $thisYear,
+            'is_default' => false,
+        ]);
+        $newSession = AcademicSession::create([
+            'name' => $thisYear . '-' . $thisYear + 1,
             'is_default' => true,
         ]);
         $admin = User::factory()->create([
@@ -29,19 +38,19 @@ class TestDataSeeder extends Seeder
             'password' => bcrypt('secret'),
             'is_admin' => true,
             'is_staff' => true,
-            'academic_session_id' => $session->id,
+            'academic_session_id' => $oldSession->id,
         ]);
         User::factory()->count(1000)->create([
-            'academic_session_id' => $session->id,
+            'academic_session_id' => $oldSession->id,
         ]);
-        User::take(300)->inRandomOrder()->get()->each(function ($user) use ($session) {
+        User::take(300)->inRandomOrder()->get()->each(function ($user) use ($oldSession, $newSession) {
             Software::factory()->count(rand(1, 3))->create([
                 'created_by' => $user->id,
-                'academic_session_id' => $session->id,
+                'academic_session_id' => $oldSession->id,
             ]);
         });
 
-        Course::factory()->count(1000)->create(['academic_session_id' => $session->id]);
+        Course::factory()->count(1000)->create(['academic_session_id' => $oldSession->id]);
         foreach (Course::all() as $course) {
             $course->software()->attach(Software::inRandomOrder()->limit(rand(1, 3))->pluck('id'));
         }
@@ -74,5 +83,7 @@ class TestDataSeeder extends Seeder
         foreach ($schools as $school) {
             School::create($school);
         }
+
+        $oldSession->copyForwardTo($newSession);
     }
 }
