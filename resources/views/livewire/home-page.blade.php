@@ -156,4 +156,53 @@
             </div>
         </form>
     </flux:modal>
+
+    <!-- software details modal -->
+    <flux:modal name="software-details" variant="flyout" class="space-y-6">
+        <div>
+            <flux:heading size="lg">Software details</flux:heading>
+        </div>
+
+        <flux:card class="space-y-6">
+            <div>
+                <flux:heading>Basic details</flux:heading>
+            </div>
+
+            <div>
+                <ul>
+                    <li>
+                        <flux:icon.bolt>{{ $softwareDetails->name }}</flux:icon.bolt>
+                    </li>
+                    <li>
+                        <flux:icon.bolt>{{ $softwareDetails->version ?? 'N/A' }}</flux:icon.bolt>
+                    </li>
+                    <li>
+                        <flux:icon.bolt>{{ $softwareDetails->os ?? 'N/A' }}</flux:icon.bolt>
+                    </li>
+                </ul>
+            </div>
+        </flux:card>
+
+        @if ($softwareDetails->config || $softwareDetails->notes)
+        <flux:card class="space-y-6">
+            <div>
+                <flux:heading>Notes</flux:heading>
+            </div>
+
+            @if ($softwareDetails->config)
+                <div class="p-4 bg-gray-100 rounded-lg">
+                    <flux:heading size="sm">Configuration</flux:heading>
+                    {{ $softwareDetails->config }}
+                </div>
+            @endif
+
+            @if ($softwareDetails->notes)
+                <div class="p-4 bg-gray-100 rounded-lg">
+                    <flux:heading size="sm">Notes</flux:heading>
+                    {{ $softwareDetails->notes }}
+                </div>
+            @endif
+        </flux:card>
+    </flux:modal>
+
 </div>

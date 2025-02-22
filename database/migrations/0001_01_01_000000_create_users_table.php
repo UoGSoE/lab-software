@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('username');
             $table->string('surname');
             $table->string('forenames');
-            $table->string('email')->unique();
+            $table->string('email');
             $table->boolean('is_admin')->default(false);
             $table->boolean('is_staff')->default(false);
             $table->date('signed_off_at')->nullable();

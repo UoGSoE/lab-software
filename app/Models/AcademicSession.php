@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class AcademicSession extends Model
 {
@@ -28,5 +29,20 @@ class AcademicSession extends Model
     {
         $this->is_default = true;
         $this->save();
+    }
+
+    public function courses(): HasMany
+    {
+        return $this->hasMany(Course::class);
+    }
+
+    public function users(): HasMany
+    {
+        return $this->hasMany(User::class);
+    }
+
+    public function software(): HasMany
+    {
+        return $this->hasMany(Software::class);
     }
 }
