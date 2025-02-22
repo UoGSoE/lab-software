@@ -3,11 +3,13 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Notifications\Notifiable;
+use App\Models\Traits\AcademicSessionScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use App\Models\Traits\AcademicSessionScope;
+
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
@@ -64,5 +66,12 @@ class User extends Authenticatable
     public function courses(): BelongsToMany
     {
         return $this->belongsToMany(Course::class)->withTimestamps();
+    }
+
+    public function getSignoffLink(int $durationDays = 30)
+    {
+        return URL::temporarySignedRoute(
+            'signed-off', now()->addDays($durationDays), ['user' => $this]
+        );
     }
 }
