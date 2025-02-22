@@ -17,5 +17,6 @@ Route::get('/signed-off/{user}', function (\App\Models\User $user) {
     if (! request()->hasValidSignature()) {
         abort(401, 'Invalid link signature - it may have expired.  Please visit the <a href="'.route('home').'">home page</a> to log in instead.');
     }
+    $user->signOffSoftware();
     return view('signed_off', ['user' => $user]);
 })->name('signed-off');

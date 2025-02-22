@@ -1,0 +1,8 @@
+---
+description: 
+globs: 
+---
+
+# Coding style
+
+- Always use fully expanded Eloquent where clauses - eg "->where('column', '=', $value)

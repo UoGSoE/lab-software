@@ -68,6 +68,27 @@ class User extends Authenticatable
         return $this->belongsToMany(Course::class)->withTimestamps();
     }
 
+    public function getPreviousSignOffs()
+    {
+        $currentAcademicSession = AcademicSession::getDefualt();
+        $previousAcademicSession = $currentAcademicSession->previous();
+
+        $oldUser = User::where('username', $this->username)->where('academic_session_id', $previousAcademicSession->id)->first();
+        if (! $oldUser) {
+            throw new \Exception('User not found in previous session');
+        }
+        return $oldUser->courses()->get();
+    }
+    public function signOffLastYearsSoftware()
+    {
+        $currentAcademicSession = AcademicSession::getDefualt();
+        $lastYearsCourses = $this->getPreviousSignOffs();
+        foreach ($lastYearsCourses as $course) {
+            $thisYearsCopy = Course::where('code', '=', $course->code)->where('academic_session_id', $currentAcademicSession->id)->firstOrFail();
+            $thisYearsCopy->users()->attach($this->id);
+        }
+    }
+
     public function getSignoffLink(int $durationDays = 30)
     {
         return URL::temporarySignedRoute(
