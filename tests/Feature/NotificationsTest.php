@@ -3,8 +3,9 @@
 use App\Models\User;
 use App\Models\Course;
 use App\Models\Setting;
-use App\Models\Software;
 use App\Mail\SystemOpen;
+use App\Models\Software;
+use App\Mail\SystemClosing;
 use App\Models\AcademicSession;
 use Illuminate\Support\Facades\Mail;
 
@@ -142,8 +143,9 @@ describe('system open notification', function () {
         $mailable->assertSeeInText($course2->code);
         $mailable->assertDontSeeInText($course3->code);
         $mailable->assertSeeInText('Looks good to me');
-        $mailable->assertSeeInText('Otherwise, please log into the Lab Software System to indicate the software you will be using for teaching this year.
-');
+        $mailable->assertSeeInText('Otherwise, please log into the Lab Software System to indicate the software you will be using for teaching this year.');
+        $mailable->assertSeeInText(route('signed-off', $user));
+
         $mailable->assertDontSeeInText('Please log into the Lab Software System to indicate the software you will be using for teaching this year.');
     });
 
@@ -179,13 +181,87 @@ describe('system open notification', function () {
         $mailable->assertSeeInText('The Lab Software Team');
         $mailable->assertDontSeeInText($software1->name);
         $mailable->assertDontSeeInText($course1->code);
+        $mailable->assertDontSeeInText(route('signed-off', $user));
+        $mailable->assertSeeInText(route('home'));
         $mailable->assertDontSeeInText('Looks good to me');
         $mailable->assertDontSeeInText('Otherwise, please log into the Lab Software System to indicate the software you will be using for teaching this year.
 ');
         $mailable->assertSeeInText('Please log into the Lab Software System to indicate the software you will be using for teaching this year.');
     });
 
+    test('the magic sign off link does the right thing', function () {
+        $oldSession = AcademicSession::factory()->create([
+            'name' => '2020/2021',
+            'is_default' => false,
+            'created_at' => now()->subYear(),
+            'updated_at' => now()->subYear(),
+        ]);
+        $user = User::factory()->create([
+            'academic_session_id' => $oldSession->id,
+        ]);
+        $course1 = Course::factory()->create([
+            'academic_session_id' => $oldSession->id,
+            'code' => 'CRS1234',
+        ]);
+        $course2 = Course::factory()->create([
+            'academic_session_id' => $oldSession->id,
+            'code' => 'CRS5678',
+        ]);
+        $software1 = Software::factory()->create([
+            'academic_session_id' => $oldSession->id,
+            'name' => 'Software 1',
+        ]);
+        $software2 = Software::factory()->create([
+            'academic_session_id' => $oldSession->id,
+            'name' => 'Software 2',
+        ]);
+        $course1->software()->attach($software1);
+        $course2->software()->attach($software2);
+        $user->courses()->attach($course1);
+        $user->courses()->attach($course2);
+        $oldSession->copyForwardTo($this->academicSession);
+        $currentUser = User::where('username', $user->username)->where('academic_session_id', $this->academicSession->id)->first();
+
+        $this->get($currentUser->getSignoffLink())->assertOk()->assertSee('Your software requests from last year will be used again this year');
+
+        $courses = Course::where('academic_session_id', $this->academicSession->id)->get();
+        $this->assertCount(2, $courses);
+        $this->assertTrue($courses->contains('code', 'CRS1234'));
+        $this->assertTrue($courses->contains('code', 'CRS5678'));
+        $this->assertTrue($currentUser->courses->contains('code', 'CRS1234'));
+        $this->assertTrue($currentUser->courses->contains('code', 'CRS5678'));
+    });
 });
 
-it('sends a second nag message before the closing date for anyone who has not signed stuff off', function () {
+describe('deadline notification', function () {
+    it('sends a second nag message before the closing date for anyone who has not signed stuff off', function () {
+        Mail::fake();
+        Setting::factory()->create([
+            'academic_session_id' => $this->academicSession->id,
+            'key' => 'notifications.deadline_nag_message',
+            'value' => now()->format('Y-m-d'),
+        ]);
+
+        $user1 = User::factory()->create([
+            'academic_session_id' => $this->academicSession->id,
+        ]);
+
+        $user2 = User::factory()->create([
+            'academic_session_id' => $this->academicSession->id,
+        ]);
+
+        $userWhoIsntInThisYear = User::factory()->create([
+            'academic_session_id' => AcademicSession::factory()->create([
+                'name' => '2020/2021',
+                'is_default' => false,
+            ]),
+        ]);
+
+        $this->artisan('labsoftware:notify-closing-deadline');
+
+        Mail::assertQueued(SystemClosing::class, 2);
+        Mail::assertQueued(SystemClosing::class, fn (SystemClosing $mail) => $mail->hasTo($user1->email));
+        Mail::assertQueued(SystemClosing::class, fn (SystemClosing $mail) => $mail->hasTo($user2->email));
+
+    });
 });

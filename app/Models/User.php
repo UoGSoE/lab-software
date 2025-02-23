@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Notifications\Notifiable;
 use App\Models\Traits\AcademicSessionScope;
@@ -68,20 +69,21 @@ class User extends Authenticatable
         return $this->belongsToMany(Course::class)->withTimestamps();
     }
 
-    public function getPreviousSignOffs()
+    public function getPreviousSignOffs(): Collection
     {
-        $currentAcademicSession = AcademicSession::getDefualt();
-        $previousAcademicSession = $currentAcademicSession->previous();
+        $currentAcademicSession = AcademicSession::getDefault();
+        $previousAcademicSession = $currentAcademicSession->getPrevious();
 
-        $oldUser = User::where('username', $this->username)->where('academic_session_id', $previousAcademicSession->id)->first();
+        $oldUser = User::where('username', '=', $this->username)->where('academic_session_id', '=', $previousAcademicSession->id)->first();
         if (! $oldUser) {
-            throw new \Exception('User not found in previous session');
+            return collect([]);
         }
         return $oldUser->courses()->get();
     }
+
     public function signOffLastYearsSoftware()
     {
-        $currentAcademicSession = AcademicSession::getDefualt();
+        $currentAcademicSession = AcademicSession::getDefault();
         $lastYearsCourses = $this->getPreviousSignOffs();
         foreach ($lastYearsCourses as $course) {
             $thisYearsCopy = Course::where('code', '=', $course->code)->where('academic_session_id', $currentAcademicSession->id)->firstOrFail();

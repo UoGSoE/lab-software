@@ -1,0 +1,13 @@
+---
+description: Rules for the project coding style etc
+globs: *.php
+---
+
+# Style and guidelines
+
+- This project is using Laravel 11, Livewire 3, Flux and Tailwind v4
+- Follow Laravel best practices and conventions
+- Always use fully expanded Eloquent where clauses - eg "->where('column', '=', $value)
+- You should not remove comments
+
+

@@ -33,10 +33,9 @@ class TestDataSeeder extends Seeder
             'name' => $thisYear . '-' . $thisYear + 1,
             'is_default' => true,
         ]);
-        $admin = User::factory()->create([
+        $admin = User::factory()->admin()->create([
             'username' => 'admin',
             'password' => bcrypt('secret'),
-            'is_admin' => true,
             'is_staff' => true,
             'academic_session_id' => $oldSession->id,
         ]);

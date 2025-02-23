@@ -15,7 +15,7 @@
 
 If the above is going to be the same for the next academic year, please just click the button below to short-circuit the process.
 
-<x-mail::button :url="config('app.url')">
+<x-mail::button :url="$user->getSignoffLink()">
 Looks good to me
 </x-mail::button>
 

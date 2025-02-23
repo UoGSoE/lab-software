@@ -31,6 +31,11 @@ class AcademicSession extends Model
         $this->save();
     }
 
+    public function getPrevious(): ?AcademicSession
+    {
+        return self::where('created_at', '<', $this->created_at)->orderBy('created_at', 'desc')->first();
+    }
+
     public function courses(): HasMany
     {
         return $this->hasMany(Course::class);
@@ -48,6 +53,8 @@ class AcademicSession extends Model
 
     public function copyForwardTo(AcademicSession $newSession): void
     {
+        $newSoftwareMap = [];
+
         foreach (User::where('academic_session_id', $this->id)->get() as $user) {
             $newUser = $user->replicate();
             $newUser->academic_session_id = $newSession->id;
@@ -57,11 +64,18 @@ class AcademicSession extends Model
             $newSoftware = $software->replicate();
             $newSoftware->academic_session_id = $newSession->id;
             $newSoftware->save();
+            if (!isset($newSoftwareMap[$software->id])) {
+                $newSoftwareMap[$software->id] = [];
+            }
+            $newSoftwareMap[$software->id][] = $newSoftware->id;
         }
         foreach (Course::where('academic_session_id', $this->id)->get() as $course) {
             $newCourse = $course->replicate();
             $newCourse->academic_session_id = $newSession->id;
             $newCourse->save();
+            $course->software->each(function ($software) use ($newCourse, $newSoftwareMap) {
+                $newCourse->software()->attach($newSoftwareMap[$software->id]);
+            });
         }
     }
 }
