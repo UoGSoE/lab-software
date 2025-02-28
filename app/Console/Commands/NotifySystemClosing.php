@@ -15,33 +15,38 @@ class NotifySystemClosing extends Command
 
     protected $description = 'Notify users that the system is closing';
 
+    /**
+     * The number of days before the closing date to notify users.
+     */
+    protected $daysBeforeClosing = 7;
+
     public function handle()
     {
         $academicSession = AcademicSession::getDefault();
 
         $setting = Setting::forAcademicSession($academicSession)
-            ->where('key', 'notifications.initial_nag_message')
+            ->where('key', 'notifications.closing_date')
             ->first();
 
         if (!$setting) {
-            $this->error('No setting found for initial nag message');
+            $this->error('No setting found for closing date');
             return 1;
         }
 
         try {
             $date = $setting->toDate();
         } catch (\Exception $e) {
-            $this->error('Invalid date for initial nag message');
+            $this->error('Invalid date for closing date');
             return 1;
         }
 
         if (!$date) {
-            $this->error('No date found for initial nag message');
+            $this->error('No date found for closing date');
             return 1;
         }
 
-        $date = $date->addDays(30);
-        if (! $date->isToday()) {
+        $closingDate = $date->subDays($this->daysBeforeClosing);
+        if (! $closingDate->isToday()) {
             return 0;
         }
 

@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\User;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\ServiceProvider;
@@ -29,6 +30,9 @@ class AppServiceProvider extends ServiceProvider
             }));
         });
 
+        Blade::if('admin', function () {
+            return auth()->check() && auth()->user()->isAdmin();
+        });
         // Model::preventLazyLoading(! app()->isProduction());
     }
 }

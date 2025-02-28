@@ -22,13 +22,14 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
+        'name',
+        'email',
+        'password',
         'username',
         'forenames',
         'surname',
         'is_staff',
         'is_admin',
-        'email',
-        'password',
         'academic_session_id',
     ];
 
@@ -39,6 +40,7 @@ class User extends Authenticatable
      */
     protected $casts = [
         'signed_off_at' => 'date',
+        'is_admin' => 'boolean',
     ];
 
     /**
@@ -96,5 +98,15 @@ class User extends Authenticatable
         return URL::temporarySignedRoute(
             'signed-off', now()->addDays($durationDays), ['user' => $this]
         );
+    }
+
+    public function getFullNameAttribute(): string
+    {
+        return $this->forenames . ' ' . $this->surname;
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->is_admin;
     }
 }

@@ -21,7 +21,7 @@ describe('system open notification', function () {
         Mail::fake();
         Setting::factory()->create([
             'academic_session_id' => $this->academicSession->id,
-            'key' => 'notifications.initial_nag_message',
+            'key' => 'notifications.system_open_date',
             'value' => now()->format('Y-m-d'),
         ]);
 
@@ -51,7 +51,7 @@ describe('system open notification', function () {
         Mail::fake();
         Setting::factory()->create([
             'academic_session_id' => $this->academicSession->id,
-            'key' => 'notifications.initial_nag_message',
+            'key' => 'notifications.system_open_date',
             'value' => now()->addDays(2)->format('Y-m-d'),
         ]);
 
@@ -71,7 +71,7 @@ describe('system open notification', function () {
         ]);
         $setting = Setting::factory()->create([
             'academic_session_id' => $this->academicSession->id,
-            'key' => 'notifications.initial_nag_message',
+            'key' => 'notifications.system_open_date',
             'value' => 'invalid-date',
         ]);
 
@@ -90,7 +90,7 @@ describe('system open notification', function () {
         Mail::fake();
         Setting::factory()->create([
             'academic_session_id' => $this->academicSession->id,
-            'key' => 'notifications.initial_nag_message',
+            'key' => 'notifications.system_open_date',
             'value' => now()->format('Y-m-d'),
         ]);
         $oldSession = AcademicSession::factory()->create([
@@ -153,7 +153,7 @@ describe('system open notification', function () {
         Mail::fake();
         Setting::factory()->create([
             'academic_session_id' => $this->academicSession->id,
-            'key' => 'notifications.initial_nag_message',
+            'key' => 'notifications.system_open_date',
             'value' => now()->format('Y-m-d'),
         ]);
         $oldSession = AcademicSession::factory()->create([
@@ -238,8 +238,8 @@ describe('deadline notification', function () {
         Mail::fake();
         Setting::factory()->create([
             'academic_session_id' => $this->academicSession->id,
-            'key' => 'notifications.deadline_nag_message',
-            'value' => now()->format('Y-m-d'),
+            'key' => 'notifications.closing_date',
+            'value' => now()->addDays(7)->format('Y-m-d'),  // we send the notification 7 days before the closing date
         ]);
 
         $user1 = User::factory()->create([

@@ -34,7 +34,7 @@ class TestDataSeeder extends Seeder
             'is_default' => true,
         ]);
         $admin = User::factory()->admin()->create([
-            'username' => 'admin',
+            'username' => 'admin2x',
             'password' => bcrypt('secret'),
             'is_staff' => true,
             'academic_session_id' => $oldSession->id,

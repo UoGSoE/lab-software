@@ -33,23 +33,23 @@ class NotifySystemOpen extends Command
         $academicSession = AcademicSession::getDefault();
 
         $setting = Setting::forAcademicSession($academicSession)
-            ->where('key', 'notifications.initial_nag_message')
+            ->where('key', 'notifications.system_open_date')
             ->first();
 
         if (!$setting) {
-            $this->error('No setting found for initial nag message');
+            $this->error('No setting found for system open date');
             return 1;
         }
 
         try {
             $date = $setting->toDate();
         } catch (\Exception $e) {
-            $this->error('Invalid date for initial nag message');
+            $this->error('Invalid date for system open date');
             return 1;
         }
 
         if (!$date) {
-            $this->error('No date found for initial nag message');
+            $this->error('No date found for system open date');
             return 1;
         }
 

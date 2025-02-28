@@ -27,6 +27,7 @@ class AcademicSession extends Model
 
     public function setAsDefault(): void
     {
+        self::where('id', '!=', $this->id)->update(['is_default' => false]);
         $this->is_default = true;
         $this->save();
     }

@@ -12,6 +12,7 @@
         <link href="https://fonts.bunny.net/css?family=inter:400,500,600&display=swap" rel="stylesheet" />
     </head>
     <body class="min-h-screen bg-white dark:bg-zinc-800">
+        @auth
         <flux:sidebar sticky stashable class="bg-zinc-50 dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-700">
             <flux:sidebar.toggle class="lg:hidden" icon="x-mark" />
 
@@ -24,58 +25,57 @@
                 <flux:navlist.item icon="document-text" badge="12" href="#">Pending requests</flux:navlist.item>
             </flux:navlist>
 
-            <flux:separator />
+            @admin
+                <flux:separator />
 
-            <flux:navlist variant="outline">
-                <flux:navlist.item icon="inbox" href="/exporter" :current="request()->routeIs('exporter')">Export data</flux:navlist.item>
-                <flux:navlist.item icon="document-text" badge="{{ $total_user_count }}" href="/users" :current="request()->routeIs('users')">Manage Users</flux:navlist.item>
-            </flux:navlist>
+                <flux:navlist variant="outline">
+                    <flux:navlist.item icon="inbox" href="/exporter" :current="request()->routeIs('exporter')">Export data</flux:navlist.item>
+                    <flux:navlist.item icon="document-text" badge="{{ $total_user_count }}" href="/users" :current="request()->routeIs('users')">Manage Users</flux:navlist.item>
+                </flux:navlist>
 
-            <flux:spacer />
+                <flux:spacer />
 
-            <flux:navlist variant="outline">
-                <flux:navlist.item icon="cog-6-tooth" href="/settings" :current="request()->routeIs('settings')">Settings</flux:navlist.item>
-                <flux:navlist.item icon="information-circle" href="/help" :current="request()->routeIs('help')">Help</flux:navlist.item>
-            </flux:navlist>
+                <flux:navlist variant="outline">
+                    <flux:navlist.item icon="cog-6-tooth" href="/settings" :current="request()->routeIs('settings')">Settings</flux:navlist.item>
+                    <flux:navlist.item icon="information-circle" href="/help" :current="request()->routeIs('help')">Help</flux:navlist.item>
+                </flux:navlist>
+            @endadmin
 
             <flux:dropdown position="top" align="start" class="max-lg:hidden">
-                <flux:profile avatar="https://fluxui.dev/img/demo/user.png" name="Olivia Martin" />
+                <flux:profile name="{{ auth()->check() ? auth()->user()->full_name : 'Guest' }}" />
 
                 <flux:menu>
-                    <flux:menu.radio.group>
-                        <flux:menu.radio checked>Olivia Martin</flux:menu.radio>
-                        <flux:menu.radio>Truly Delta</flux:menu.radio>
-                    </flux:menu.radio.group>
-
-                    <flux:menu.separator />
-
-                    <flux:menu.item icon="arrow-right-start-on-rectangle">Logout</flux:menu.item>
+                        <flux:menu.item>
+                            <form method="post" action="{{ route('logout') }}">
+                            @csrf
+                            <flux:button class="w-full" icon="arrow-right-start-on-rectangle" type="submit">Logout</flux:button>
+                        </form>
+                    </flux:menu.item>
                 </flux:menu>
             </flux:dropdown>
         </flux:sidebar>
+        @endauth
 
-
+        @auth
         <flux:header class="lg:hidden">
             <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" />
 
             <flux:spacer />
 
             <flux:dropdown position="top" alignt="start">
-                <flux:profile avatar="https://fluxui.dev/img/demo/user.png" />
+                <flux:profile name="{{ auth()->check() ? auth()->user()->full_name : 'Guest' }}" />
 
                 <flux:menu>
-                    <flux:menu.radio.group>
-                        <flux:menu.radio checked>Olivia Martin</flux:menu.radio>
-                        <flux:menu.radio>Truly Delta</flux:menu.radio>
-                    </flux:menu.radio.group>
-
-                    <flux:menu.separator />
-
-                    <flux:menu.item icon="arrow-right-start-on-rectangle">Logout</flux:menu.item>
+                    <flux:menu.item icon="arrow-right-start-on-rectangle">
+                        <form method="post" action="{{ route('logout') }}">
+                            @csrf
+                            <flux:button type="submit">Logout</flux:button>
+                        </form>
+                    </flux:menu.item>
                 </flux:menu>
             </flux:dropdown>
         </flux:header>
-
+        @endauth
         <flux:main>
             {{ $slot }}
         </flux:main>

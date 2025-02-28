@@ -17,6 +17,8 @@ class Settings extends Component
     public $newSchoolName = '';
     public $newSchoolCoursePrefix = '';
 
+    public $defaultSessionId = null;
+
     public function mount()
     {
         $defaultSession = AcademicSession::getDefault();
@@ -27,6 +29,7 @@ class Settings extends Component
         [$start, $end] = explode('-', $defaultSession->name);
         $this->newSessionNameStart = $start + 1;
         $this->newSessionNameEnd = $end + 1;
+        $this->defaultSessionId = $defaultSession->id;
     }
 
     public function render()
@@ -97,5 +100,22 @@ class Settings extends Component
         $this->reset('newSchoolName', 'newSchoolCoursePrefix');
 
         $this->modal('create-new-school')->close();
+    }
+
+    public function updateDefaultSession()
+    {
+        $this->validate([
+            'defaultSessionId' => 'required|exists:academic_sessions,id',
+        ]);
+
+        $academicSession = AcademicSession::find($this->defaultSessionId);
+        if (! $academicSession) {
+            Flux::toast('Academic session not found', variant: 'danger');
+            return;
+        }
+
+        $academicSession->setAsDefault();
+
+        Flux::toast("Default academic session updated to {$academicSession->name}", variant: 'success');
     }
 }

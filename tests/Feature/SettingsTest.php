@@ -59,4 +59,17 @@ describe('The livewire settings page', function () {
         $this->assertFalse($this->academicSession->fresh()->is_default);
         Queue::assertPushed(CopyForward::class);
     });
+
+    it('lets admins change the default academic session', function () {
+        $secondSession = AcademicSession::factory()->create(['name' => '2025-2026']);
+        actingAs($this->admin);
+
+        livewire(Settings::class)
+            ->set('defaultSessionId', $secondSession->id)
+            ->call('updateDefaultSession')
+            ->assertHasNoErrors();
+
+        $this->assertTrue($secondSession->fresh()->is_default);
+        $this->assertFalse($this->academicSession->fresh()->is_default);
+    });
 });
