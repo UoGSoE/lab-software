@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -54,29 +55,31 @@ class AcademicSession extends Model
 
     public function copyForwardTo(AcademicSession $newSession): void
     {
-        $newSoftwareMap = [];
+        DB::transaction(function () use ($newSession) {
+            $newSoftwareMap = [];
 
-        foreach (User::where('academic_session_id', $this->id)->get() as $user) {
-            $newUser = $user->replicate();
-            $newUser->academic_session_id = $newSession->id;
-            $newUser->save();
-        }
-        foreach (Software::where('academic_session_id', $this->id)->get() as $software) {
-            $newSoftware = $software->replicate();
-            $newSoftware->academic_session_id = $newSession->id;
-            $newSoftware->save();
-            if (!isset($newSoftwareMap[$software->id])) {
-                $newSoftwareMap[$software->id] = [];
+            foreach (User::where('academic_session_id', $this->id)->get() as $user) {
+                $newUser = $user->replicate();
+                $newUser->academic_session_id = $newSession->id;
+                $newUser->save();
             }
-            $newSoftwareMap[$software->id][] = $newSoftware->id;
-        }
-        foreach (Course::where('academic_session_id', $this->id)->get() as $course) {
-            $newCourse = $course->replicate();
-            $newCourse->academic_session_id = $newSession->id;
-            $newCourse->save();
-            $course->software->each(function ($software) use ($newCourse, $newSoftwareMap) {
-                $newCourse->software()->attach($newSoftwareMap[$software->id]);
-            });
-        }
+            foreach (Software::where('academic_session_id', $this->id)->get() as $software) {
+                $newSoftware = $software->replicate();
+                $newSoftware->academic_session_id = $newSession->id;
+                $newSoftware->save();
+                if (!isset($newSoftwareMap[$software->id])) {
+                    $newSoftwareMap[$software->id] = [];
+                }
+                $newSoftwareMap[$software->id][] = $newSoftware->id;
+            }
+            foreach (Course::where('academic_session_id', $this->id)->get() as $course) {
+                $newCourse = $course->replicate();
+                $newCourse->academic_session_id = $newSession->id;
+                $newCourse->save();
+                $course->software->each(function ($software) use ($newCourse, $newSoftwareMap) {
+                    $newCourse->software()->attach($newSoftwareMap[$software->id]);
+                });
+            }
+        });
     }
 }
