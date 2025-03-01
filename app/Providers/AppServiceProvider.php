@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\User;
+use App\Models\AcademicSession;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Database\Eloquent\Model;
@@ -26,7 +27,11 @@ class AppServiceProvider extends ServiceProvider
         view()->composer('components.layouts.app', function ($view) {
             $ttl = now()->addHours(12);
             $view->with('total_user_count', Cache::remember('total_user_count', $ttl, function () {
-                return User::count();
+                $academicSession = AcademicSession::getDefault();
+                if (! $academicSession) {
+                    throw new \Exception('No default academic session found');
+                }
+                return User::forAcademicSession($academicSession)->count();
             }));
         });
 
