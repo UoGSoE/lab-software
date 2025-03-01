@@ -73,7 +73,7 @@ class HomePage extends Component
                 trim($this->filters['course']), fn ($query) => $query->where('code', 'like', '%' . $this->filters['course'] . '%')
             );
         $userId = auth()->user()->id;
-        $courses = $courses->paginate(25);
+        $courses = $courses->paginate(10);
         $courses->each(function ($course) use ($userId) {
             $course->signed_off = $course->users->contains($userId);
         });
