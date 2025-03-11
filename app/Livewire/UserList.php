@@ -14,12 +14,6 @@ class UserList extends Component
     public $search = '';
     public $onlyAdmins = false;
     public $onlyMissing = false;
-    public $academicSessionId;
-
-    public function mount()
-    {
-        $this->academicSessionId = AcademicSession::getDefault()->id;
-    }
 
     public function render()
     {
@@ -31,7 +25,7 @@ class UserList extends Component
     public function getUsers()
     {
         $search = trim($this->search);
-        return User::where('academic_session_id', '=', $this->academicSessionId)->orderBy('surname')->with('courses')
+        return User::orderBy('surname')->with('courses')
             ->when($search, function ($query) use ($search) {
                 $query->where('surname', 'like', '%' . $search . '%')
                     ->orWhere('forenames', 'like', '%' . $search . '%');

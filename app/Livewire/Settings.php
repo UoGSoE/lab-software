@@ -19,6 +19,12 @@ class Settings extends Component
 
     public $defaultSessionId = null;
 
+    public $editSchoolId = null;
+    public $editSchoolName = '';
+    public $editSchoolCoursePrefix = '';
+
+    public $deleteSchoolId = null;
+
     public function mount()
     {
         $defaultSession = AcademicSession::getDefault();
@@ -70,8 +76,7 @@ class Settings extends Component
         $newSession->save();
 
         if ($this->newSessionIsDefault) {
-            $currentSession->is_default = false;
-            $currentSession->save();
+            $newSession->setAsDefault();
         }
 
         CopyForward::dispatch($currentSession, $newSession);
@@ -118,4 +123,59 @@ class Settings extends Component
 
         Flux::toast("Default academic session updated to {$academicSession->name}", variant: 'success');
     }
+
+    public function editSchool($id)
+    {
+        $school = School::find($id);
+        if (! $school) {
+            Flux::toast('School not found', variant: 'danger');
+            return;
+        }
+
+        $this->editSchoolId = $school->id;
+        $this->editSchoolName = $school->name;
+        $this->editSchoolCoursePrefix = $school->course_prefix;
+
+        $this->modal('edit-school')->show();
+    }
+
+    public function updateSchool()
+    {
+        $this->validate([
+            'editSchoolId' => 'required|exists:schools,id',
+            'editSchoolName' => 'required|string|max:255',
+            'editSchoolCoursePrefix' => 'required|string|max:255',
+        ]);
+
+        $school = School::find($this->editSchoolId);
+        if (! $school) {
+            Flux::toast('School not found', variant: 'danger');
+            return;
+        }
+
+        $school->name = $this->editSchoolName;
+        $school->course_prefix = $this->editSchoolCoursePrefix;
+        $school->save();
+
+        $this->reset('editSchoolId', 'editSchoolName', 'editSchoolCoursePrefix');
+
+        $this->modal('edit-school')->close();
+
+        Flux::toast("School {$this->editSchoolName} updated!", variant: 'success');
+    }
+
+    public function deleteSchool($schoolId)
+    {
+        $school = School::find($schoolId);
+        if (! $school) {
+            Flux::toast('School not found', variant: 'danger');
+            return;
+        }
+
+        $school->delete();
+
+        Flux::toast("School {$school->name} deleted!", variant: 'success');
+    }
+
+
 }

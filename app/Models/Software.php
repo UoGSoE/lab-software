@@ -5,12 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Attributes\ScopedBy;
+use App\Models\Scopes\AcademicSessionScope;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use App\Models\Traits\AcademicSessionScope;
+
+#[ScopedBy([AcademicSessionScope::class])]
 class Software extends Model
 {
     /** @use HasFactory<\Database\Factories\SoftwareFactory> */
-    use HasFactory, AcademicSessionScope;
+    use HasFactory;
 
     protected $fillable = ['name', 'version', 'course_code', 'os', 'building', 'lab', 'notes', 'config', 'is_new', 'is_free', 'created_by', 'academic_session_id'];
 

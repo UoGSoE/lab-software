@@ -9,6 +9,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Mail\Mailables\Envelope;
+use App\Models\Scopes\AcademicSessionScope;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
 class SystemOpen extends Mailable
@@ -20,12 +21,15 @@ class SystemOpen extends Mailable
 
     public function __construct(User $user)
     {
-        // NOTE: assumes the user has courses.software eager loaded
         $this->user = $user;
         // build a collection of course codes, each with a collection of software names & versions
-        $this->softwareList = $user->courses->reject(fn ($course) => $course->software->isEmpty())
+        $this->softwareList = $user->courses()->withoutGlobalScope(AcademicSessionScope::class)
+            ->get()
+            ->reject(
+                fn ($course) => $course->software()->withoutGlobalScope(AcademicSessionScope::class)->count() === 0
+            )
             ->mapWithKeys(function ($course) {
-                $software = $course->software->map(function ($software) {
+                $software = $course->software()->withoutGlobalScope(AcademicSessionScope::class)->get()->map(function ($software) {
                     return $software->name . ($software->version ? ' version ' . $software->version : '');
                 });
                 return [$course->code => $software];

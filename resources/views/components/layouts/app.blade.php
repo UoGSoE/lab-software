@@ -30,7 +30,7 @@
 
                 <flux:navlist variant="outline">
                     <flux:navlist.item icon="inbox" href="/exporter" :current="request()->routeIs('exporter')">Export data</flux:navlist.item>
-                    <flux:navlist.item icon="document-text" badge="{{ $total_user_count }}" href="/users" :current="request()->routeIs('users')">Manage Users</flux:navlist.item>
+                    <flux:navlist.item icon="document-text" href="/users" :current="request()->routeIs('users')">Manage Users</flux:navlist.item>
                 </flux:navlist>
 
                 <flux:spacer />

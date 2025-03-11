@@ -8,6 +8,7 @@ use App\Models\Software;
 use App\Mail\SystemClosing;
 use App\Models\AcademicSession;
 use Illuminate\Support\Facades\Mail;
+use App\Models\Scopes\AcademicSessionScope;
 
 beforeEach(function () {
     $this->academicSession = AcademicSession::factory()->create([
@@ -126,12 +127,11 @@ describe('system open notification', function () {
             'academic_session_id' => $oldSession->id,
             'code' => 'CRS9012',
         ]);
-        $course1->software()->attach($software1);
-        $course1->software()->attach($software2);
-        $course2->software()->attach($software3);
-        $user->courses()->attach($course1);
-        $user->courses()->attach($course2);
-        $user->load('courses.software');
+        $course1->software()->withoutGlobalScope(AcademicSessionScope::class)->attach($software1);
+        $course1->software()->withoutGlobalScope(AcademicSessionScope::class)->attach($software2);
+        $course2->software()->withoutGlobalScope(AcademicSessionScope::class)->attach($software3);
+        $user->courses()->withoutGlobalScope(AcademicSessionScope::class)->attach($course1);
+        $user->courses()->withoutGlobalScope(AcademicSessionScope::class)->attach($course2);
 
         $mailable = new SystemOpen($user);
         $mailable->assertSeeInText('Lab Software System');
@@ -215,21 +215,22 @@ describe('system open notification', function () {
             'academic_session_id' => $oldSession->id,
             'name' => 'Software 2',
         ]);
-        $course1->software()->attach($software1);
-        $course2->software()->attach($software2);
-        $user->courses()->attach($course1);
-        $user->courses()->attach($course2);
+        $course1->software()->withoutGlobalScope(AcademicSessionScope::class)->attach($software1);
+        $course2->software()->withoutGlobalScope(AcademicSessionScope::class)->attach($software2);
+        $user->courses()->withoutGlobalScope(AcademicSessionScope::class)->attach($course1);
+        $user->courses()->withoutGlobalScope(AcademicSessionScope::class)->attach($course2);
         $oldSession->copyForwardTo($this->academicSession);
-        $currentUser = User::where('username', $user->username)->where('academic_session_id', $this->academicSession->id)->first();
+        $currentUser = User::where('username', '=', $user->username)->first();
 
         $this->get($currentUser->getSignoffLink())->assertOk()->assertSee('Your software requests from last year will be used again this year');
 
-        $courses = Course::where('academic_session_id', $this->academicSession->id)->get();
+        $courses = Course::get();
         $this->assertCount(2, $courses);
         $this->assertTrue($courses->contains('code', 'CRS1234'));
         $this->assertTrue($courses->contains('code', 'CRS5678'));
-        $this->assertTrue($currentUser->courses->contains('code', 'CRS1234'));
-        $this->assertTrue($currentUser->courses->contains('code', 'CRS5678'));
+        $userCourses = $currentUser->fresh()->courses;
+        $this->assertTrue($userCourses->contains('code', 'CRS1234'));
+        $this->assertTrue($userCourses->contains('code', 'CRS5678'));
     });
 });
 

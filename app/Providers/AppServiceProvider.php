@@ -24,17 +24,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        view()->composer('components.layouts.app', function ($view) {
-            $ttl = now()->addHours(12);
-            $view->with('total_user_count', Cache::remember('total_user_count', $ttl, function () {
-                $academicSession = AcademicSession::getDefault();
-                if (! $academicSession) {
-                    throw new \Exception('No default academic session found');
-                }
-                return User::forAcademicSession($academicSession)->count();
-            }));
-        });
-
         Blade::if('admin', function () {
             return auth()->check() && auth()->user()->isAdmin();
         });

@@ -4,13 +4,15 @@ namespace App\Models;
 
 use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Traits\AcademicSessionScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Attributes\ScopedBy;
+use App\Models\Scopes\AcademicSessionScope;
 
+#[ScopedBy([AcademicSessionScope::class])]
 class Setting extends Model
 {
     /** @use HasFactory<\Database\Factories\SettingFactory> */
-    use HasFactory, AcademicSessionScope;
+    use HasFactory;
 
     protected $fillable = [
         'key',

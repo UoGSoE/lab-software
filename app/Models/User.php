@@ -6,15 +6,17 @@ namespace App\Models;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Notifications\Notifiable;
-use App\Models\Traits\AcademicSessionScope;
+use App\Models\Scopes\AcademicSessionScope;
+use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
+#[ScopedBy([AcademicSessionScope::class])]
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, AcademicSessionScope;
+    use HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -76,19 +78,21 @@ class User extends Authenticatable
         $currentAcademicSession = AcademicSession::getDefault();
         $previousAcademicSession = $currentAcademicSession->getPrevious();
 
-        $oldUser = User::where('username', '=', $this->username)->where('academic_session_id', '=', $previousAcademicSession->id)->first();
+        $oldUser = User::withoutGlobalScope(AcademicSessionScope::class)
+                ->where('username', '=', $this->username)
+                ->where('academic_session_id', '=', $previousAcademicSession->id)
+                ->first();
         if (! $oldUser) {
             return collect([]);
         }
-        return $oldUser->courses()->get();
+        return $oldUser->courses()->withoutGlobalScope(AcademicSessionScope::class)->get();
     }
 
     public function signOffLastYearsSoftware()
     {
-        $currentAcademicSession = AcademicSession::getDefault();
         $lastYearsCourses = $this->getPreviousSignOffs();
         foreach ($lastYearsCourses as $course) {
-            $thisYearsCopy = Course::where('code', '=', $course->code)->where('academic_session_id', $currentAcademicSession->id)->firstOrFail();
+            $thisYearsCopy = Course::where('code', '=', $course->code)->firstOrFail();
             $thisYearsCopy->users()->attach($this->id);
         }
     }

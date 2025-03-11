@@ -119,7 +119,7 @@
         </div>
 
         <form wire:submit="addSoftware" class="space-y-6">
-            <flux:input label="Name of package (required)" placeholder="Eg, StarCCM+" wire:model="newSoftware.name" required/>
+            <flux:input label="Name of package (required)" placeholder="Eg, StarCCM+" wire:model="newSoftware.name" />
 
             <flux:field>
                 <flux:input label="Version" placeholder="Eg, 2024.01.01" wire:model="newSoftware.version" />
@@ -133,7 +133,7 @@
                 <flux:checkbox label="BSD" value="BSD" />
             </flux:checkbox.group>
 
-            <flux:input wire:model.blur="newSoftware.course_code" label="Course code (required)" placeholder="Eg, ENG1234" required />
+            <flux:input wire:model.blur="newSoftware.course_code" label="Course code (required)" placeholder="Eg, ENG1234"  />
             @if ($newSoftware['course_code'] && !$courseCodes->contains(strtoupper(trim($newSoftware['course_code']))))
                 <flux:description class="-mt-2">(New course code will be created)</flux:description>
             @endif
@@ -177,7 +177,7 @@
                         <flux:icon.bolt>{{ $softwareDetails->version ?? 'N/A' }}</flux:icon.bolt>
                     </li>
                     <li>
-                        <flux:icon.bolt>{{ $softwareDetails->os ?? 'N/A' }}</flux:icon.bolt>
+                        <flux:icon.bolt>{{ $softwareDetails->operating_systems }}</flux:icon.bolt>
                     </li>
                 </ul>
             </div>

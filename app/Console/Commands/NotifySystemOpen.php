@@ -32,8 +32,7 @@ class NotifySystemOpen extends Command
     {
         $academicSession = AcademicSession::getDefault();
 
-        $setting = Setting::forAcademicSession($academicSession)
-            ->where('key', 'notifications.system_open_date')
+        $setting = Setting::where('key', 'notifications.system_open_date')
             ->first();
 
         if (!$setting) {
@@ -57,7 +56,7 @@ class NotifySystemOpen extends Command
             return 0;
         }
 
-        $users = User::forAcademicSession($academicSession)->with('courses.software')->get();
+        $users = User::with('courses.software')->get();
 
         foreach ($users as $user) {
             Mail::to($user)->later(now()->addMinutes(rand(1, 30)), new SystemOpen($user));

@@ -5,11 +5,11 @@ namespace App\Livewire;
 use App\Exporters\ExportAllData;
 use Livewire\Component;
 
-class Exporter extends Component
+class ImportExport extends Component
 {
     public function render()
     {
-        return view('livewire.exporter');
+        return view('livewire.importexport');
     }
 
     public function export()

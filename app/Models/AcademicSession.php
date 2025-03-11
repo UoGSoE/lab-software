@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Scopes\AcademicSessionScope;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -23,7 +24,15 @@ class AcademicSession extends Model
 
     public static function getDefault(): ?AcademicSession
     {
-        return self::where('is_default', true)->first();
+        return self::where('is_default', true)->firstOrFail();
+    }
+
+    public static function getUsersSession(): ?AcademicSession
+    {
+        if (session()->missing('academic_session_id')) {
+            return self::getDefault();
+        }
+        return self::find(session()->get('academic_session_id'));
     }
 
     public function setAsDefault(): void
@@ -55,15 +64,16 @@ class AcademicSession extends Model
 
     public function copyForwardTo(AcademicSession $newSession): void
     {
-        DB::transaction(function () use ($newSession) {
+        $thisId = $this->id;
+        DB::transaction(function () use ($newSession, $thisId) {
             $newSoftwareMap = [];
 
-            foreach (User::where('academic_session_id', $this->id)->get() as $user) {
+            foreach (User::withoutGlobalScope(AcademicSessionScope::class)->where('academic_session_id', $thisId)->get() as $user) {
                 $newUser = $user->replicate();
                 $newUser->academic_session_id = $newSession->id;
                 $newUser->save();
             }
-            foreach (Software::where('academic_session_id', $this->id)->get() as $software) {
+            foreach (Software::withoutGlobalScope(AcademicSessionScope::class)->where('academic_session_id', $thisId)->get() as $software) {
                 $newSoftware = $software->replicate();
                 $newSoftware->academic_session_id = $newSession->id;
                 $newSoftware->save();
@@ -72,11 +82,11 @@ class AcademicSession extends Model
                 }
                 $newSoftwareMap[$software->id][] = $newSoftware->id;
             }
-            foreach (Course::where('academic_session_id', $this->id)->get() as $course) {
+            foreach (Course::withoutGlobalScope(AcademicSessionScope::class)->where('academic_session_id', $thisId)->get() as $course) {
                 $newCourse = $course->replicate();
                 $newCourse->academic_session_id = $newSession->id;
                 $newCourse->save();
-                $course->software->each(function ($software) use ($newCourse, $newSoftwareMap) {
+                $course->software()->withoutGlobalScope(AcademicSessionScope::class)->get()->each(function ($software) use ($newCourse, $newSoftwareMap) {
                     $newCourse->software()->attach($newSoftwareMap[$software->id]);
                 });
             }

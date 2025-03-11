@@ -23,9 +23,12 @@ class NotifySystemClosing extends Command
     public function handle()
     {
         $academicSession = AcademicSession::getDefault();
+        if (! $academicSession) {
+            $this->error('No default academic session found');
+            return 1;
+        }
 
-        $setting = Setting::forAcademicSession($academicSession)
-            ->where('key', 'notifications.closing_date')
+        $setting = Setting::where('key', 'notifications.closing_date')
             ->first();
 
         if (!$setting) {
@@ -50,7 +53,8 @@ class NotifySystemClosing extends Command
             return 0;
         }
 
-        $usersWithNoSignoffs = User::forAcademicSession($academicSession)->with('courses')->get()
+        // working on the assumption that the users who are not admins (should just be IT staff) are the ones who need to be notified
+        $usersWithNoSignoffs = User::with('courses')->where('is_admin', '=', false)->get()
             ->filter(fn ($user) => $user->courses->isEmpty());
 
         foreach ($usersWithNoSignoffs as $user) {

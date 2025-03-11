@@ -31,7 +31,13 @@
 
                 <ul class="space-y-2">
                     @foreach ($schools as $school)
-                        <li>{{ $school->name }} <flux:badge>{{ $school->course_prefix }}</flux:badge></li>
+                        <li class="flex flex-row justify-between items-center">
+                            <span>{{ $school->name }} <flux:badge>{{ $school->course_prefix }}</flux:badge></span>
+                            <span>
+                                <flux:button type="button" icon="pencil" wire:click="editSchool({{ $school->id }})"></flux:button>
+                                <flux:button type="button" icon="trash" wire:confirm="Are you sure you want to delete this school ({{ $school->name }})? This action cannot be undone." wire:click="deleteSchool({{ $school->id }})"></flux:button>
+                            </span>
+                        </li>
                     @endforeach
                 </ul>
             </flux:card>
@@ -86,4 +92,30 @@
             </div>
         </form>
     </flux:modal>
-</div>
+
+    <flux:modal name="edit-school" variant="flyout" class="space-y-6">
+        <form wire:submit="updateSchool" class="space-y-6">
+            <flux:heading>Edit school</flux:heading>
+
+            <flux:input type="text" label="School name" name="name" wire:model="editSchoolName" required />
+            <flux:input type="text" label="Course prefix" description="(Eg, 'ENG', 'MATH')" name="course_prefix" wire:model="editSchoolCoursePrefix" required />
+
+            <div class="flex flex-row justify-end gap-2">
+                <flux:button variant="primary" type="submit">Update</flux:button>
+                <flux:button type="button" x-on:click="$flux.modal('edit-school').close()">Cancel</flux:button>
+            </div>
+        </form>
+    </flux:modal>
+
+    <flux:modal name="delete-school" variant="flyout" class="space-y-6">
+        <form wire:submit="deleteSchool" class="space-y-6">
+            <flux:heading>Delete school</flux:heading>
+
+            <flux:subheading>Are you sure you want to delete this school? This action cannot be undone.</flux:subheading>
+
+            <div class="flex flex-row justify-end gap-2">
+                <flux:button variant="danger" type="submit">Delete</flux:button>
+                <flux:button type="button" x-on:click="$flux.modal('delete-school').close()">Cancel</flux:button>
+            </div>
+        </form>
+    </flux:modal>

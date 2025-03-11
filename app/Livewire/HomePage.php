@@ -43,7 +43,7 @@ class HomePage extends Component
     public function mount()
     {
         // $this->filters['school'] = request()->user()->school;
-        $this->currentSessionName = AcademicSession::getDefault()?->name;
+        $this->currentSessionName = AcademicSession::getUsersSession()?->name;
         $this->softwareDetails = new Software();
     }
 

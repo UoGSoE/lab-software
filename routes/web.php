@@ -3,6 +3,7 @@
 use App\Http\Middleware\Admin;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Http\Middleware\SetAcademicSessionMiddleware;
 
 // if (! auth()->check()) {
 //     auth()->loginUsingId(\App\Models\User::first()->id);
@@ -25,10 +26,10 @@ Route::post('/logout', function () {
     return redirect()->route('login');
 })->name('logout');
 
-Route::group(['middleware' => 'auth'], function() {
+Route::group(['middleware' => ['auth', SetAcademicSessionMiddleware::class]], function() {
     Route::get('/', \App\Livewire\HomePage::class)->name('home');
     Route::get('/college-wide', \App\Livewire\CollegeWide::class)->name('college-wide');
-    Route::get('/exporter', \App\Livewire\Exporter::class)->name('exporter');
+    Route::get('/importexport', \App\Livewire\ImportExport::class)->name('importexport');
     Route::get('/users', \App\Livewire\UserList::class)->name('users');
     Route::get('/settings', \App\Livewire\Settings::class)->name('settings')->middleware(Admin::class);
     Route::get('/help', \App\Livewire\Help::class)->name('help');

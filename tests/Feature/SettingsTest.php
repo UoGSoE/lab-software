@@ -1,7 +1,8 @@
 <?php
 
-use App\Jobs\CopyForward;
 use App\Models\User;
+use App\Models\School;
+use App\Jobs\CopyForward;
 use App\Livewire\Settings;
 use App\Models\AcademicSession;
 use function Pest\Livewire\livewire;
@@ -71,5 +72,69 @@ describe('The livewire settings page', function () {
 
         $this->assertTrue($secondSession->fresh()->is_default);
         $this->assertFalse($this->academicSession->fresh()->is_default);
+    });
+
+    it('allows admins to create a new school', function () {
+        actingAs($this->admin);
+
+        livewire(Settings::class)
+            ->set('newSchoolName', 'Test School')
+            ->set('newSchoolCoursePrefix', 'TEST')
+            ->call('createNewSchool')
+            ->assertHasNoErrors();
+
+        $this->assertDatabaseHas('schools', [
+            'name' => 'Test School',
+            'course_prefix' => 'TEST',
+        ]);
+    });
+
+    it('allows admins to update a school', function () {
+        $school = School::factory()->create([
+            'name' => 'Test School',
+            'course_prefix' => 'TEST',
+        ]);
+        actingAs($this->admin);
+
+        livewire(Settings::class)
+            ->set('editSchoolId', $school->id)
+            ->set('editSchoolName', 'Updated School')
+            ->set('editSchoolCoursePrefix', 'UPD')
+            ->call('updateSchool')
+            ->assertHasNoErrors();
+
+        $this->assertDatabaseMissing('schools', [
+            'name' => 'Test School',
+            'course_prefix' => 'TEST',
+        ]);
+        $this->assertDatabaseHas('schools', [
+            'name' => 'Updated School',
+            'course_prefix' => 'UPD',
+        ]);
+    });
+
+    it('allows admins to delete a school', function () {
+        $school = School::factory()->create([
+            'name' => 'Test School',
+            'course_prefix' => 'TEST',
+        ]);
+        $secondSchool = School::factory()->create([
+            'name' => 'Second School',
+            'course_prefix' => 'SECOND',
+        ]);
+        actingAs($this->admin);
+
+        livewire(Settings::class)
+            ->call('deleteSchool', $school->id)
+            ->assertHasNoErrors();
+
+        $this->assertDatabaseMissing('schools', [
+            'name' => 'Test School',
+            'course_prefix' => 'TEST',
+        ]);
+        $this->assertDatabaseHas('schools', [
+            'name' => 'Second School',
+            'course_prefix' => 'SECOND',
+        ]);
     });
 });

@@ -159,8 +159,6 @@ describe('interacting with the existing software', function () {
             ->assertSee($this->software->os)
             ->assertSee($this->software->building)
             ->assertSee($this->software->lab)
-            ->assertSee($this->software->version)
-            ->assertSee($this->software->created_by?->name)
-            ->assertSee($this->software->created_at->format('d/m/Y'));
+            ->assertSee($this->software->version);
     });
 });
