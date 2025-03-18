@@ -22,6 +22,8 @@ return new class extends Migration
             $table->text('notes')->nullable();
             $table->boolean('is_new')->default(false);
             $table->boolean('is_free')->default(false);
+            $table->string('licence_type')->nullable();
+            $table->text('licence_details')->nullable();
             $table->foreignId('created_by')->constrained('users');
             $table->foreignId('academic_session_id')->constrained('academic_sessions');
             $table->timestamps();
