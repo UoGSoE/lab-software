@@ -36,16 +36,6 @@ class User extends Authenticatable
     ];
 
     /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'signed_off_at' => 'date',
-        'is_admin' => 'boolean',
-    ];
-
-    /**
      * The attributes that should be hidden for serialization.
      *
      * @var list<string>
@@ -54,6 +44,19 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'signed_off_at' => 'date',
+            'is_admin' => 'boolean',
+        ];
+    }
 
     /**
      * Get the attributes that should be cast.

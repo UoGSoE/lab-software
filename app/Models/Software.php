@@ -17,10 +17,13 @@ class Software extends Model
 
     protected $fillable = ['name', 'version', 'course_code', 'os', 'building', 'lab', 'notes', 'config', 'is_new', 'is_free', 'created_by', 'academic_session_id'];
 
-    protected $casts = [
-        'building' => 'array',
-        'os' => 'array',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'building' => 'array',
+            'os' => 'array',
+        ];
+    }
 
     public function courses(): BelongsToMany
     {

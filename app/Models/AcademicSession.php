@@ -18,9 +18,12 @@ class AcademicSession extends Model
         'is_default',
     ];
 
-    protected $casts = [
-        'is_default' => 'boolean',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'is_default' => 'boolean',
+        ];
+    }
 
     public static function getDefault(): ?AcademicSession
     {
