@@ -19,7 +19,7 @@ class CourseFactory extends Factory
     {
         return [
             'title' => fake()->sentence(),
-            'code' => fake()->randomElement(['ENG', 'PHAS', 'MATH', 'CHEM', 'GES', 'COMP']) . fake()->numberBetween(1000, 9999),
+            'code' => fake()->randomElement(['ENG', 'PHAS', 'MATH', 'CHEM', 'GES', 'COMP']).fake()->numberBetween(1000, 9999),
             'academic_session_id' => AcademicSession::factory(),
         ];
     }

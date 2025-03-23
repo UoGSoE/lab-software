@@ -2,21 +2,21 @@
 
 namespace App\Mail;
 
+use App\Models\Scopes\AcademicSessionScope;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
-use Illuminate\Support\Collection;
 use Illuminate\Mail\Mailables\Content;
-use Illuminate\Queue\SerializesModels;
 use Illuminate\Mail\Mailables\Envelope;
-use App\Models\Scopes\AcademicSessionScope;
-use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Collection;
 
 class SystemOpen extends Mailable
 {
     use Queueable, SerializesModels;
 
     public User $user;
+
     public Collection $softwareList;
 
     public function __construct(User $user)
@@ -30,8 +30,9 @@ class SystemOpen extends Mailable
             )
             ->mapWithKeys(function ($course) {
                 $software = $course->software()->withoutGlobalScope(AcademicSessionScope::class)->get()->map(function ($software) {
-                    return $software->name . ($software->version ? ' version ' . $software->version : '');
+                    return $software->name.($software->version ? ' version '.$software->version : '');
                 });
+
                 return [$course->code => $software];
             });
     }

@@ -3,14 +3,14 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\URL;
-use Illuminate\Notifications\Notifiable;
 use App\Models\Scopes\AcademicSessionScope;
 use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\URL;
 
 #[ScopedBy([AcademicSessionScope::class])]
 class User extends Authenticatable
@@ -79,12 +79,13 @@ class User extends Authenticatable
         $previousAcademicSession = $currentAcademicSession->getPrevious();
 
         $oldUser = User::withoutGlobalScope(AcademicSessionScope::class)
-                ->where('username', '=', $this->username)
-                ->where('academic_session_id', '=', $previousAcademicSession->id)
-                ->first();
+            ->where('username', '=', $this->username)
+            ->where('academic_session_id', '=', $previousAcademicSession->id)
+            ->first();
         if (! $oldUser) {
             return collect([]);
         }
+
         return $oldUser->courses()->withoutGlobalScope(AcademicSessionScope::class)->get();
     }
 
@@ -106,7 +107,7 @@ class User extends Authenticatable
 
     public function getFullNameAttribute(): string
     {
-        return $this->forenames . ' ' . $this->surname;
+        return $this->forenames.' '.$this->surname;
     }
 
     public function isAdmin(): bool

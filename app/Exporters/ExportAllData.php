@@ -20,10 +20,10 @@ class ExportAllData
     public function export()
     {
         $tempDir = sys_get_temp_dir();
-        $fileName = now()->format('Y-m-d') . '-software-data.xlsx';
-        $filePath = $tempDir . '/' . $fileName;
+        $fileName = now()->format('Y-m-d').'-software-data.xlsx';
+        $filePath = $tempDir.'/'.$fileName;
 
-        $writer = new Writer();
+        $writer = new Writer;
         $writer->openToFile($filePath);
 
         $courses = Course::orderBy('code')->with('software.createdBy')->get();

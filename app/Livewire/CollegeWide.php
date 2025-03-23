@@ -2,12 +2,13 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
 use App\Models\Software;
+use Livewire\Component;
 
 class CollegeWide extends Component
 {
     public $sortBy = 'name';
+
     public $sortDirection = 'asc';
 
     public function sort($field)

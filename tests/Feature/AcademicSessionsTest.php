@@ -1,12 +1,11 @@
 <?php
 
-use App\Models\User;
-use App\Models\Course;
-use App\Models\Software;
 use App\Jobs\CopyForward;
 use App\Models\AcademicSession;
-use Illuminate\Support\Facades\DB;
+use App\Models\Course;
 use App\Models\Scopes\AcademicSessionScope;
+use App\Models\Software;
+use App\Models\User;
 
 it('we can create a new academic session with all data copied forward', function () {
     $previousSession = AcademicSession::create([

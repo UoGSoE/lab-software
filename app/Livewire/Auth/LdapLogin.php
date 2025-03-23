@@ -2,17 +2,18 @@
 
 namespace App\Livewire\Auth;
 
-use App\Models\User;
-use Livewire\Component;
-use Illuminate\Support\Str;
 use App\Models\AcademicSession;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Str;
+use Livewire\Component;
 
 class LdapLogin extends Component
 {
     public $username = '';
+
     public $password = '';
+
     public $remember = false;
 
     public $error = '';
@@ -37,30 +38,34 @@ class LdapLogin extends Component
             if (! \Ldap::authenticate($this->username, $this->password)) {
                 $this->error = 'Invalid username or password';
                 $this->password = '';
+
                 return;
             }
 
             $ldapUser = \Ldap::findUser($this->username);
-            if (!$ldapUser) {
+            if (! $ldapUser) {
                 $this->error = 'Invalid username or password';
                 $this->password = '';
+
                 return;
             }
         }
 
         // Create or update the user in our database
         $currentSession = AcademicSession::getDefault();
-        if (!$currentSession) {
+        if (! $currentSession) {
             $this->error = 'No default academic session found';
             $this->password = '';
+
             return;
         }
 
         $localUser = User::forAcademicSession($currentSession)->where('username', $this->username)->first();
-        if (!$localUser && !$ldapUser) {
+        if (! $localUser && ! $ldapUser) {
             $this->error = 'Invalid username or password';
             $this->password = '';
-            info('Not using LDAP and no local user found: ' . $this->username);
+            info('Not using LDAP and no local user found: '.$this->username);
+
             return;
         }
 
@@ -79,13 +84,14 @@ class LdapLogin extends Component
             );
         }
 
-        if ($localUser && !$ldapUser) {
+        if ($localUser && ! $ldapUser) {
             if (! Auth::attempt([
                 'username' => $this->username,
                 'password' => $this->password,
             ])) {
                 $this->error = 'Invalid username or password';
                 $this->password = '';
+
                 return;
             }
         }
@@ -93,6 +99,4 @@ class LdapLogin extends Component
 
         return redirect()->route('home');
     }
-
-
 }

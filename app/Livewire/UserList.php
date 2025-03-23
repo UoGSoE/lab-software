@@ -5,14 +5,15 @@ namespace App\Livewire;
 use App\Models\User;
 use Livewire\Component;
 use Livewire\WithPagination;
-use App\Models\AcademicSession;
 
 class UserList extends Component
 {
     use WithPagination;
 
     public $search = '';
+
     public $onlyAdmins = false;
+
     public $onlyMissing = false;
 
     public function render()
@@ -25,10 +26,11 @@ class UserList extends Component
     public function getUsers()
     {
         $search = trim($this->search);
+
         return User::orderBy('surname')->with('courses')
             ->when($search, function ($query) use ($search) {
-                $query->where('surname', 'like', '%' . $search . '%')
-                    ->orWhere('forenames', 'like', '%' . $search . '%');
+                $query->where('surname', 'like', '%'.$search.'%')
+                    ->orWhere('forenames', 'like', '%'.$search.'%');
             })
             ->when($this->onlyAdmins, function ($query) {
                 $query->where('is_admin', true);

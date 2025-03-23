@@ -1,14 +1,14 @@
 <?php
 
-use App\Models\User;
-use App\Models\Course;
-use App\Models\Setting;
-use App\Mail\SystemOpen;
-use App\Models\Software;
 use App\Mail\SystemClosing;
+use App\Mail\SystemOpen;
 use App\Models\AcademicSession;
-use Illuminate\Support\Facades\Mail;
+use App\Models\Course;
 use App\Models\Scopes\AcademicSessionScope;
+use App\Models\Setting;
+use App\Models\Software;
+use App\Models\User;
+use Illuminate\Support\Facades\Mail;
 
 beforeEach(function () {
     $this->academicSession = AcademicSession::factory()->create([

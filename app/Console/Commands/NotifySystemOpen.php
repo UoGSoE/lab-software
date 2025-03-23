@@ -2,10 +2,10 @@
 
 namespace App\Console\Commands;
 
-use App\Models\User;
-use App\Models\Setting;
 use App\Mail\SystemOpen;
 use App\Models\AcademicSession;
+use App\Models\Setting;
+use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Mail;
 
@@ -35,8 +35,9 @@ class NotifySystemOpen extends Command
         $setting = Setting::where('key', 'notifications.system_open_date')
             ->first();
 
-        if (!$setting) {
+        if (! $setting) {
             $this->error('No setting found for system open date');
+
             return 1;
         }
 
@@ -44,11 +45,13 @@ class NotifySystemOpen extends Command
             $date = $setting->toDate();
         } catch (\Exception $e) {
             $this->error('Invalid date for system open date');
+
             return 1;
         }
 
-        if (!$date) {
+        if (! $date) {
             $this->error('No date found for system open date');
+
             return 1;
         }
 

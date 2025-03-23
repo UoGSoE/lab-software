@@ -2,25 +2,30 @@
 
 namespace App\Livewire;
 
-use Flux\Flux;
-use App\Models\School;
-use Livewire\Component;
 use App\Jobs\CopyForward;
 use App\Models\AcademicSession;
+use App\Models\School;
+use Flux\Flux;
+use Livewire\Component;
 
 class Settings extends Component
 {
     public $newSessionNameStart = '';
+
     public $newSessionNameEnd = '';
+
     public $newSessionIsDefault = true;
 
     public $newSchoolName = '';
+
     public $newSchoolCoursePrefix = '';
 
     public $defaultSessionId = null;
 
     public $editSchoolId = null;
+
     public $editSchoolName = '';
+
     public $editSchoolCoursePrefix = '';
 
     public $deleteSchoolId = null;
@@ -46,7 +51,7 @@ class Settings extends Component
         ]);
     }
 
-    function createNewSession()
+    public function createNewSession()
     {
         $earliestYear = date('Y');
         $latestYear = $earliestYear + 3;
@@ -62,6 +67,7 @@ class Settings extends Component
         $existingSession = AcademicSession::where('name', '=', $newSessionName)->first();
         if ($existingSession) {
             Flux::toast("Session {$newSessionName} already exists!", variant: 'danger');
+
             return;
         }
 
@@ -70,7 +76,7 @@ class Settings extends Component
             throw new \Exception('No default academic session found');
         }
 
-        $newSession = new AcademicSession();
+        $newSession = new AcademicSession;
         $newSession->name = $newSessionName;
         $newSession->is_default = $this->newSessionIsDefault;
         $newSession->save();
@@ -116,6 +122,7 @@ class Settings extends Component
         $academicSession = AcademicSession::find($this->defaultSessionId);
         if (! $academicSession) {
             Flux::toast('Academic session not found', variant: 'danger');
+
             return;
         }
 
@@ -129,6 +136,7 @@ class Settings extends Component
         $school = School::find($id);
         if (! $school) {
             Flux::toast('School not found', variant: 'danger');
+
             return;
         }
 
@@ -150,6 +158,7 @@ class Settings extends Component
         $school = School::find($this->editSchoolId);
         if (! $school) {
             Flux::toast('School not found', variant: 'danger');
+
             return;
         }
 
@@ -169,6 +178,7 @@ class Settings extends Component
         $school = School::find($schoolId);
         if (! $school) {
             Flux::toast('School not found', variant: 'danger');
+
             return;
         }
 
@@ -176,6 +186,4 @@ class Settings extends Component
 
         Flux::toast("School {$school->name} deleted!", variant: 'success');
     }
-
-
 }

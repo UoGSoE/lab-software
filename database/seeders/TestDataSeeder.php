@@ -2,11 +2,11 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
+use App\Models\AcademicSession;
 use App\Models\Course;
 use App\Models\School;
 use App\Models\Software;
-use App\Models\AcademicSession;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Cache;
 
@@ -26,11 +26,11 @@ class TestDataSeeder extends Seeder
         }
 
         $oldSession = AcademicSession::create([
-            'name' => $thisYear - 1 . '-' . $thisYear,
+            'name' => $thisYear - 1 .'-'.$thisYear,
             'is_default' => false,
         ]);
         $newSession = AcademicSession::create([
-            'name' => $thisYear . '-' . $thisYear + 1,
+            'name' => $thisYear.'-'.$thisYear + 1,
             'is_default' => true,
         ]);
         $admin = User::factory()->admin()->create([
@@ -42,7 +42,7 @@ class TestDataSeeder extends Seeder
         User::factory()->count(1000)->create([
             'academic_session_id' => $oldSession->id,
         ]);
-        User::take(300)->inRandomOrder()->get()->each(function ($user) use ($oldSession, $newSession) {
+        User::take(300)->inRandomOrder()->get()->each(function ($user) use ($oldSession) {
             Software::factory()->count(rand(1, 3))->create([
                 'created_by' => $user->id,
                 'academic_session_id' => $oldSession->id,

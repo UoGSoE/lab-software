@@ -17,7 +17,7 @@ class AcademicSessionFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => now()->year . '-' . now()->year + 1,
+            'name' => now()->year.'-'.now()->year + 1,
             'is_default' => true,
         ];
     }

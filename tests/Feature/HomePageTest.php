@@ -1,12 +1,13 @@
 <?php
 
-use App\Models\User;
-use App\Models\Course;
-use App\Models\Software;
 use App\Livewire\HomePage;
 use App\Models\AcademicSession;
+use App\Models\Course;
+use App\Models\Software;
+use App\Models\User;
+
+use function Pest\Laravel\actingAs;
 use function Pest\Livewire\livewire;
-use function Pest\Laravel\{actingAs};
 
 beforeEach(function () {
     $this->session = AcademicSession::factory()->create();
@@ -19,10 +20,10 @@ it('can be rendered', function () {
     $software->courses()->attach($course->id);
 
     $this->actingAs($this->user)->get('/')
-                          ->assertStatus(200)
-                          ->assertSee(config('app.name'))
-                          ->assertSee($this->session->name)
-                          ->assertSee('Test Software');
+        ->assertStatus(200)
+        ->assertSee(config('app.name'))
+        ->assertSee($this->session->name)
+        ->assertSee('Test Software');
 });
 
 describe('we can filter in various ways', function () {
@@ -88,7 +89,7 @@ describe('requesting new software', function () {
 
     it('works for the happy path', function () {
         actingAs($this->user);
-            livewire(HomePage::class)
+        livewire(HomePage::class)
             ->set('newSoftware.name', 'Test Software 2')
             ->set('newSoftware.course_code', $this->course->code)
             ->call('addSoftware')
@@ -102,7 +103,7 @@ describe('requesting new software', function () {
 
     it('flags missing required fields', function () {
         actingAs($this->user);
-            livewire(HomePage::class)
+        livewire(HomePage::class)
             ->set('newSoftware.name', '')
             ->set('newSoftware.course_code', '')
             ->call('addSoftware')

@@ -2,9 +2,9 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\AcademicSession;
 use Closure;
 use Illuminate\Http\Request;
-use App\Models\AcademicSession;
 use Symfony\Component\HttpFoundation\Response;
 
 class SetAcademicSessionMiddleware
@@ -19,6 +19,7 @@ class SetAcademicSessionMiddleware
         if (session()->missing('academic_session_id')) {
             session()->put('academic_session_id', AcademicSession::getDefault()?->id ?? 0);
         }
+
         return $next($request);
     }
 }

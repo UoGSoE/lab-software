@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Models\User;
 use App\Models\AcademicSession;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -20,6 +20,7 @@ class SoftwareFactory extends Factory
     {
         $building = rand(1, 10) > 6 ? [fake()->randomElement(['Engineering', 'Physics', 'Maths', 'Chemistry', 'Geoscience', 'Computer Science'])] : null;
         $lab = $building ? (rand(1, 10) > 6 ? fake()->numberBetween(100, 500) : null) : null;
+
         return [
             'name' => $this->getSoftwareName(),
             'version' => fake()->randomElement(['1.0', '2.0', '3.0', '4.0', '5.0', '6.0', '7.0', '8.0', '9.0', '10.0']),

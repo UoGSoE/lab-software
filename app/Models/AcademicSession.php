@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Facades\DB;
-use Illuminate\Database\Eloquent\Model;
 use App\Models\Scopes\AcademicSessionScope;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\DB;
 
 class AcademicSession extends Model
 {
@@ -32,6 +32,7 @@ class AcademicSession extends Model
         if (session()->missing('academic_session_id')) {
             return self::getDefault();
         }
+
         return self::find(session()->get('academic_session_id'));
     }
 
@@ -77,7 +78,7 @@ class AcademicSession extends Model
                 $newSoftware = $software->replicate();
                 $newSoftware->academic_session_id = $newSession->id;
                 $newSoftware->save();
-                if (!isset($newSoftwareMap[$software->id])) {
+                if (! isset($newSoftwareMap[$software->id])) {
                     $newSoftwareMap[$software->id] = [];
                 }
                 $newSoftwareMap[$software->id][] = $newSoftware->id;

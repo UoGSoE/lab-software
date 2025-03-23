@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\AcademicSessionScope;
+use Illuminate\Database\Eloquent\Attributes\ScopedBy;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Attributes\ScopedBy;
-use App\Models\Scopes\AcademicSessionScope;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 #[ScopedBy([AcademicSessionScope::class])]
@@ -35,12 +35,13 @@ class Software extends Model
     public function getLocationAttribute(): string
     {
         // TODO: this might be redundant - waiting on feedback
-        return (string)$this->lab;
+        return (string) $this->lab;
         $location = '';
         foreach ($this->building ?? [] as $building) {
-            $location = $location . $building . ', ';
+            $location = $location.$building.', ';
         }
-        return $location . ($this->lab ? ' - ' . $this->lab : '');
+
+        return $location.($this->lab ? ' - '.$this->lab : '');
     }
 
     public function getOperatingSystemsAttribute(): string

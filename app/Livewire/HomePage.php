@@ -2,23 +2,22 @@
 
 namespace App\Livewire;
 
-use Flux\Flux;
-use App\Models\Course;
-use Livewire\Component;
-use App\Models\Software;
-use Illuminate\Support\Arr;
-use Livewire\WithPagination;
 use App\Models\AcademicSession;
-use Illuminate\Validation\Rule;
-use Illuminate\Support\Collection;
+use App\Models\Course;
+use App\Models\Software;
+use Flux\Flux;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Support\Arr;
+use Illuminate\Validation\Rule;
+use Livewire\Component;
+use Livewire\WithPagination;
 
 class HomePage extends Component
 {
     use WithPagination;
 
     public string $currentSessionName = '';
+
     public ?Software $softwareDetails = null;
 
     public array $newSoftware = [
@@ -44,13 +43,14 @@ class HomePage extends Component
     {
         // $this->filters['school'] = request()->user()->school;
         $this->currentSessionName = AcademicSession::getUsersSession()?->name;
-        $this->softwareDetails = new Software();
+        $this->softwareDetails = new Software;
     }
 
     public function render()
     {
         $courses = $this->getFilteredCourses();
         $courseCodes = $courses->pluck('code')->unique()->sort();
+
         // $softwareTitles = $courses->map(fn ($course) => $course->software->map(fn ($software) => $software->name))->unique();
         return view('livewire.home-page', [
             'courses' => $courses,
@@ -62,21 +62,22 @@ class HomePage extends Component
     public function getFilteredCourses(): LengthAwarePaginator
     {
         $courses = Course::whereHas('software', function ($query) {
-            $query->where('name', 'like', '%' . $this->filters['software'] . '%');
+            $query->where('name', 'like', '%'.$this->filters['software'].'%');
         })->with(['software' => function ($query) {
-            $query->where('name', 'like', '%' . $this->filters['software'] . '%');
+            $query->where('name', 'like', '%'.$this->filters['software'].'%');
         }])->with('users')->orderBy('code')
             ->when(
-                trim($this->filters['school']), fn ($query) => $query->where('code', 'like', $this->filters['school'] . '%')
+                trim($this->filters['school']), fn ($query) => $query->where('code', 'like', $this->filters['school'].'%')
             )
             ->when(
-                trim($this->filters['course']), fn ($query) => $query->where('code', 'like', '%' . $this->filters['course'] . '%')
+                trim($this->filters['course']), fn ($query) => $query->where('code', 'like', '%'.$this->filters['course'].'%')
             );
         $userId = auth()->user()->id;
         $courses = $courses->paginate(10);
         $courses->each(function ($course) use ($userId) {
             $course->signed_off = $course->users->contains($userId);
         });
+
         return $courses;
     }
 
@@ -122,7 +123,7 @@ class HomePage extends Component
 
         $courseCode = strtoupper(trim($this->newSoftware['course_code']));
         $course = Course::where('code', '=', $courseCode)->first();
-        if (!$course) {
+        if (! $course) {
             $course = Course::create([
                 'code' => $courseCode,
                 'title' => $courseCode,

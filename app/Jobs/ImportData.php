@@ -2,13 +2,13 @@
 
 namespace App\Jobs;
 
-use App\Models\User;
+use App\Models\AcademicSession;
 use App\Models\Course;
 use App\Models\Software;
-use Illuminate\Support\Str;
-use App\Models\AcademicSession;
-use Illuminate\Foundation\Queue\Queueable;
+use App\Models\User;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Support\Str;
 
 class ImportData implements ShouldQueue
 {
@@ -17,9 +17,7 @@ class ImportData implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(public array $data, public int $academicSessionId, public int $userId)
-    {
-    }
+    public function __construct(public array $data, public int $academicSessionId, public int $userId) {}
 
     /**
      * Execute the job.
@@ -56,7 +54,7 @@ class ImportData implements ShouldQueue
                 $courseCode = trim(strtoupper($courseCode));
                 $isTiedToCourse = true;
                 // check the course code is 2 or more alpha characters followed by four numbers
-                if (!preg_match('/^[A-Za-z]{2,}\d{4}/', $courseCode)) {
+                if (! preg_match('/^[A-Za-z]{2,}\d{4}/', $courseCode)) {
                     // this is not invalid, it just means the software isn't tied to a course
                     $isTiedToCourse = false;
                 }
@@ -72,12 +70,12 @@ class ImportData implements ShouldQueue
 
                 foreach ($courseContacts as $contact) {
                     $contact = trim(strtolower($contact));
-                    if (!filter_var($contact, FILTER_VALIDATE_EMAIL)) {
+                    if (! filter_var($contact, FILTER_VALIDATE_EMAIL)) {
                         // TODO: fix this
                         continue;
                     }
                     $user = User::where('email', '=', $contact)->first();
-                    if (!$user) {
+                    if (! $user) {
                         $user = $this->createNewUser($contact, $academicSession->id);
                     }
 
@@ -87,7 +85,7 @@ class ImportData implements ShouldQueue
                 }
 
                 $software = Software::where('name', $softwareName)->where('academic_session_id', $academicSession->id)->first();
-                if (!$software) {
+                if (! $software) {
                     $software = Software::create([
                         'name' => $softwareName,
                         'academic_session_id' => $academicSession->id,
@@ -105,7 +103,6 @@ class ImportData implements ShouldQueue
                 }
             }
 
-
         });
     }
 
@@ -121,6 +118,7 @@ class ImportData implements ShouldQueue
             'password' => bcrypt(Str::random(64)),
             'academic_session_id' => $academicSessionId,
         ]);
+
         return $user;
     }
 }
