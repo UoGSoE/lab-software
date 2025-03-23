@@ -18,8 +18,8 @@ class SettingFactory extends Factory
     public function definition(): array
     {
         return [
-            'key' => $this->faker->word,
-            'value' => $this->faker->date,
+            'key' => $this->faker->word(),
+            'value' => $this->faker->date(),
             'academic_session_id' => AcademicSession::factory(),
         ];
     }
