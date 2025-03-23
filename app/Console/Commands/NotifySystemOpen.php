@@ -64,5 +64,7 @@ class NotifySystemOpen extends Command
         foreach ($users as $user) {
             Mail::to($user)->later(now()->addMinutes(rand(1, 30)), new SystemOpen($user));
         }
+
+        return 0;
     }
 }

@@ -64,5 +64,7 @@ class NotifySystemClosing extends Command
         foreach ($usersWithNoSignoffs as $user) {
             Mail::to($user)->later(now()->addMinutes(rand(1, 30)), new SystemClosing($user));
         }
+
+        return 0;
     }
 }
