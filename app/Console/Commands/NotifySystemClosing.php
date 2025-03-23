@@ -20,7 +20,7 @@ class NotifySystemClosing extends Command
      */
     protected $daysBeforeClosing = 7;
 
-    public function handle()
+    public function handle(): int
     {
         $academicSession = AcademicSession::getDefault();
         if (! $academicSession) {
