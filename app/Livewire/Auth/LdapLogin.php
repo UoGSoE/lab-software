@@ -60,7 +60,7 @@ class LdapLogin extends Component
             return;
         }
 
-        $localUser = User::forAcademicSession($currentSession)->where('username', $this->username)->first();
+        $localUser = User::where('username', $this->username)->first();
         if (! $localUser && ! $ldapUser) {
             $this->error = 'Invalid username or password';
             $this->password = '';

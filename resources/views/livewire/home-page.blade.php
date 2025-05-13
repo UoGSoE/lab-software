@@ -26,8 +26,6 @@
         </flux:select>
 
         <flux:input wire:model.live="filters.course" label="Course" placeholder="Eg, ENG1234" autofocus />
-
-        <flux:input wire:model.live="filters.software" label="Software" placeholder="Eg, StarCCM" />
     </div>
 
     <flux:separator class="mt-6" />
