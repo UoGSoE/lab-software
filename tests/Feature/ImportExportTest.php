@@ -1,13 +1,20 @@
 <?php
 
+use App\Models\User;
+use App\Models\Course;
 use App\Jobs\ImportData;
+use App\Models\Software;
 use App\Livewire\ImportExport;
 use App\Models\AcademicSession;
-use App\Models\Course;
-use App\Models\Software;
-use App\Models\User;
+use App\Exporters\ExportAllData;
+use OpenSpout\Common\Entity\Row;
 use Illuminate\Http\UploadedFile;
+use OpenSpout\Common\Entity\Cell;
+use OpenSpout\Reader\XLSX\Reader;
+use OpenSpout\Writer\XLSX\Writer;
+use function Pest\Livewire\livewire;
 use Illuminate\Support\Facades\Queue;
+use Ohffs\SimpleSpout\ExcelSheet;
 
 beforeEach(function () {
     $this->academicSession = AcademicSession::factory()->create();
@@ -28,9 +35,14 @@ describe('Importing data', function () {
     it('Fires a queued job when the import is started', function () {
         Queue::fake();
 
-        $this->actingAs($this->admin)->post('/importexport/import', [
-            'importFile' => UploadedFile::fake()->createWithContent('test.csv', ''),
-        ]);
+        $headingRow = ['', 'Application', 'Version', 'Licene Type', 'Licene Details', 'COURSE', 'COURSE CONTACT', 'ROOM', 'CSCE', 'ENG BUILDS', 'Request Notes', 'Request Notes 2'];
+        $sheetName = (new ExcelSheet())->generate([$headingRow]);
+
+        $this->actingAs($this->admin)->post(route('import-software'), [
+            'importFile' => UploadedFile::fake()->createWithContent('test.xlsx', file_get_contents($sheetName)),
+        ])->assertRedirect(route('importexport'));
+
+        unlink($sheetName);
 
         Queue::assertPushed(ImportData::class);
     });
@@ -80,6 +92,53 @@ describe('Importing data', function () {
 
 describe('Exporting data', function () {
     it('can export existing data', function () {
-        $this->markTestSkipped('TODO: Implement this');
+        $expectedFilename = now()->format('Y-m-d').'-software-data.xlsx';
+        livewire(ImportExport::class)->call('export')->assertFileDownloaded($expectedFilename);
+    });
+
+    it('exports the correct data', function () {
+
+        $courseCodes = ['ENG4094', 'ENG5053', 'ENG5096'];
+        $softwareNames = ['7-Zip', 'Abaqus', 'Acrobat Reader'];
+        $softwareVersions = ['24.06', 'Latest Version', 'Latest Version'];
+        foreach ($courseCodes as $index => $courseCode) {
+            $course =Course::factory()->create([
+                'code' => $courseCode,
+                'academic_session_id' => $this->academicSession->id,
+            ]);
+
+            $software = Software::factory()->create([
+                'academic_session_id' => $this->academicSession->id,
+                'name' => $softwareNames[$index],
+                'version' => $softwareVersions[$index],
+            ]);
+
+            $course->software()->attach($software);
+        }
+
+        $filename = (new ExportAllData)->export();
+
+        expect($filename)->toBeString();
+        expect(file_exists($filename))->toBeTrue();
+        $reader = new Reader();
+        $reader->open($filename);
+
+        foreach ($reader->getSheetIterator() as $sheet) {
+            foreach ($sheet->getRowIterator() as $index => $row) {
+                $cells = $row->getCells();
+                expect($cells)->toBeArray();
+                if ($index === 1) {
+                    // in Spout-land - the first row is index 1 and is the header row
+                    expect($cells[0]->getValue())->toBe('Course Code');
+                    expect($cells[1]->getValue())->toBe('Software');
+                    expect($cells[2]->getValue())->toBe('Version');
+                } else {
+                    // we need to offset the index by 2 to account for the header row and spout's 1-based index
+                    expect($cells[0]->getValue())->toBe($courseCodes[$index - 2]);
+                    expect($cells[1]->getValue())->toBe($softwareNames[$index - 2]);
+                    expect($cells[2]->getValue())->toBe($softwareVersions[$index - 2]);
+                }
+            }
+        }
     });
 });

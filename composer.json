@@ -15,6 +15,7 @@
         "livewire/flux": "^1.1",
         "livewire/flux-pro": "^1.1",
         "ohffs/simple-laravel-ldap": "^2.0",
+        "ohffs/simple-spout": "^2.0",
         "openspout/openspout": "^4.28",
         "sentry/sentry-laravel": "^4.13"
     },
