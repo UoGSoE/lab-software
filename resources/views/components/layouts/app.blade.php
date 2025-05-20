@@ -7,7 +7,7 @@
 
         <title>{{ config('app.name') }}</title>
         @vite(['resources/css/app.css', 'resources/js/app.js'])
-        @fluxStyles
+        @fluxAppearance
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=inter:400,500,600&display=swap" rel="stylesheet" />
     </head>
@@ -29,7 +29,7 @@
                 <flux:separator />
 
                 <flux:navlist variant="outline">
-                    <flux:navlist.item icon="inbox" href="{{ route('importexport') }}" :current="request()->routeIs('importexport')">Export data</flux:navlist.item>
+                    <flux:navlist.item icon="inbox" href="{{ route('importexport') }}" :current="request()->routeIs('importexport')">Import/Export</flux:navlist.item>
                     <flux:navlist.item icon="document-text" href="/users" :current="request()->routeIs('users')">Manage Users</flux:navlist.item>
                 </flux:navlist>
 

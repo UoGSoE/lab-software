@@ -16,13 +16,13 @@
     <!-- filters -->
     <div class="flex flex-col md:flex-row gap-2 pt-6">
         <flux:select wire:model.live="filters.school" placeholder="Choose school..." label="Filter by school">
-            <flux:option value="">All</flux:option>
-            <flux:option value="ENG">Engineering</flux:option>
-            <flux:option value="COMP">CompSci</flux:option>
-            <flux:option value="PHAS">PHAS</flux:option>
-            <flux:option value="MATH">Maths & Stats</flux:option>
-            <flux:option value="GES">GES</flux:option>
-            <flux:option value="CHEM">Chemistry</flux:option>
+            <flux:select.option value="">All</flux:select.option>
+            <flux:select.option value="ENG">Engineering</flux:select.option>
+            <flux:select.option value="COMP">CompSci</flux:select.option>
+            <flux:select.option value="PHAS">PHAS</flux:select.option>
+            <flux:select.option value="MATH">Maths & Stats</flux:select.option>
+            <flux:select.option value="GES">GES</flux:select.option>
+            <flux:select.option value="CHEM">Chemistry</flux:select.option>
         </flux:select>
 
         <flux:input wire:model.live="filters.course" label="Course" placeholder="Eg, ENG1234" autofocus />
@@ -71,21 +71,21 @@
 
             <div>
                 <flux:table>
-                    <flux:columns>
-                        <flux:column width="50%">Package</flux:column>
-                        <flux:column width="10%">Version</flux:column>
-                        <flux:column class="hidden md:table-cell" width="10%">O/S</flux:column>
-                        <flux:column class="hidden md:table-cell" width="20%">Lab</flux:column>
-                        <flux:column width="10%"></flux:column>
-                    </flux:columns>
+                    <flux:table.columns>
+                        <flux:table.column width="50%">Package</flux:table.column>
+                        <flux:table.column width="10%">Version</flux:table.column>
+                        <flux:table.column class="hidden md:table-cell" width="10%">O/S</flux:table.column>
+                        <flux:table.column class="hidden md:table-cell" width="20%">Lab</flux:table.column>
+                        <flux:table.column width="10%"></flux:table.column>
+                    </flux:table.columns>
 
                     @foreach ($course->software as $software)
-                        <flux:row>
-                            <flux:cell>{{ $software->name }}</flux:cell>
-                            <flux:cell>{{ $software->version }}</flux:cell>
-                            <flux:cell class="hidden md:table-cell">{{ $software->operatingSystems }}</flux:cell>
-                            <flux:cell class="hidden md:table-cell">{{ $software->location }}</flux:cell>
-                            <flux:cell>
+                        <flux:table.row>
+                            <flux:table.cell>{{ $software->name }}</flux:table.cell>
+                            <flux:table.cell>{{ $software->version }}</flux:table.cell>
+                            <flux:table.cell class="hidden md:table-cell">{{ $software->operatingSystems }}</flux:table.cell>
+                            <flux:table.cell class="hidden md:table-cell">{{ $software->location }}</flux:table.cell>
+                            <flux:table.cell>
                                 <flux:dropdown>
                                     <flux:button icon="ellipsis-horizontal" variant="ghost" inset />
                                     <flux:navmenu>
@@ -96,8 +96,8 @@
                                         <flux:navmenu.item href="#" icon="trash" variant="danger">Delete</flux:navmenu.item>
                                     </flux:navmenu>
                                 </flux:dropdown>
-                            </flux:cell>
-                        </flux:row>
+                            </flux:table.cell>
+                        </flux:table.row>
                     @endforeach
                 </flux:table>
             </div>

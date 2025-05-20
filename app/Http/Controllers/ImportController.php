@@ -11,7 +11,6 @@ class ImportController extends Controller
 {
     public function store(Request $request)
     {
-        dd($request->all());
         $request->validate([
             'importFile' => 'required|file|mimes:xlsx',
         ]);
@@ -21,6 +20,6 @@ class ImportController extends Controller
         info('about to dispatch');
         ImportData::dispatch($rows, AcademicSession::getDefault()->id, $request->user()->id);
         info('dispatched');
-        return redirect()->route('importexport')->with('success', 'Import started');
+        return redirect()->route('importexport')->with('success', 'Import started.  You will receive an email when it is complete.');
     }
 }

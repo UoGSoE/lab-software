@@ -27,11 +27,11 @@ class TestDataSeeder extends Seeder
 
         $oldSession = AcademicSession::create([
             'name' => $thisYear - 1 .'-'.$thisYear,
-            'is_default' => false,
+            'is_default' => true,
         ]);
         $newSession = AcademicSession::create([
             'name' => $thisYear.'-'.$thisYear + 1,
-            'is_default' => true,
+            'is_default' => false,
         ]);
         $admin = User::factory()->admin()->create([
             'username' => 'admin2x',
@@ -84,5 +84,6 @@ class TestDataSeeder extends Seeder
         }
 
         $oldSession->copyForwardTo($newSession);
+        $newSession->setAsDefault();
     }
 }
