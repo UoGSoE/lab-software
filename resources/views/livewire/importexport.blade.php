@@ -1,5 +1,11 @@
 <div>
     <flux:button wire:click="export">Export</flux:button>
+    <form action="{{ route('import-software') }}" method="post" enctype="multipart/form-data">
+        @csrf
+        <flux:input type="file" name="importFile" />
+        <flux:button icon="arrow-down" type="submit">Import</flux:button>
+        <flux:error name="importFile" />
+    </form>
 
     <flux:separator class="mt-6 mb-6" />
 

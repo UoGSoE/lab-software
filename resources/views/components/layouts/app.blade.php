@@ -29,7 +29,7 @@
                 <flux:separator />
 
                 <flux:navlist variant="outline">
-                    <flux:navlist.item icon="inbox" href="/exporter" :current="request()->routeIs('exporter')">Export data</flux:navlist.item>
+                    <flux:navlist.item icon="inbox" href="{{ route('importexport') }}" :current="request()->routeIs('importexport')">Export data</flux:navlist.item>
                     <flux:navlist.item icon="document-text" href="/users" :current="request()->routeIs('users')">Manage Users</flux:navlist.item>
                 </flux:navlist>
 
