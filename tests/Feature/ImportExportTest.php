@@ -120,24 +120,17 @@ describe('Exporting data', function () {
 
         expect($filename)->toBeString();
         expect(file_exists($filename))->toBeTrue();
-        $reader = new Reader();
-        $reader->open($filename);
-
-        foreach ($reader->getSheetIterator() as $sheet) {
-            foreach ($sheet->getRowIterator() as $index => $row) {
-                $cells = $row->getCells();
-                expect($cells)->toBeArray();
-                if ($index === 1) {
-                    // in Spout-land - the first row is index 1 and is the header row
-                    expect($cells[0]->getValue())->toBe('Course Code');
-                    expect($cells[1]->getValue())->toBe('Software');
-                    expect($cells[2]->getValue())->toBe('Version');
-                } else {
-                    // we need to offset the index by 2 to account for the header row and spout's 1-based index
-                    expect($cells[0]->getValue())->toBe($courseCodes[$index - 2]);
-                    expect($cells[1]->getValue())->toBe($softwareNames[$index - 2]);
-                    expect($cells[2]->getValue())->toBe($softwareVersions[$index - 2]);
-                }
+        $rows = (new ExcelSheet())->trimmedImport($filename);
+        expect($rows)->toBeArray();
+        foreach ($rows as $index => $row) {
+            if ($index === 0) {
+                expect($row[0])->toBe('Course Code');
+                expect($row[1])->toBe('Software');
+                expect($row[2])->toBe('Version');
+            } else {
+                expect($row[0])->toBe($courseCodes[$index - 1]);
+                expect($row[1])->toBe($softwareNames[$index - 1]);
+                expect($row[2])->toBe($softwareVersions[$index - 1]);
             }
         }
     });
