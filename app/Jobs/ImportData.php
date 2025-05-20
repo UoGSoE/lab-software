@@ -53,9 +53,8 @@ class ImportData implements ShouldQueue
             foreach ($courseCodes as $courseCode) {
                 $courseCode = trim(strtoupper($courseCode));
                 $isTiedToCourse = true;
-                // check the course code is 2 or more alpha characters followed by four numbers
+                // if we don't have a valid course code, treat the software as being a 'global' piece of software
                 if (! preg_match('/^[A-Za-z]{2,}\d{4}/', $courseCode)) {
-                    // this is not invalid, it just means the software isn't tied to a course
                     $isTiedToCourse = false;
                 }
 
