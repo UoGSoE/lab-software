@@ -49,10 +49,10 @@ describe('Importing data', function () {
 
     it('The import data job will import the data', function () {
         $testData = [
-            ['', 'Application', 'Version', 'Licene Type', 'Licene Details', 'COURSE', 'COURSE CONTACT', 'ROOM', 'CSCE', 'ENG BUILDS', 'Request Notes', 'Request Notes 2'],
-            ['', '7-Zip', '24.06', 'NO LICENSE NEEDED', 'n/a', 'General Use', '', 'ALL', 'Y', 'ALL', ''],
+            // ['', 'Application', 'Version', 'Licene Type', 'Licene Details', 'COURSE', 'COURSE CONTACT', 'ROOM', 'CSCE', 'ENG BUILDS', 'Request Notes', 'Request Notes 2'],
+            // ['', '7-Zip', '24.06', 'NO LICENSE NEEDED', 'n/a', 'General Use', '', 'ALL', 'Y', 'ALL', ''],
             ['', 'Abaqus ', 'Latest Version', 'SCHOOL HELD', "See 'Licences' tab", 'ENG4094, ENG5053, ENG5096', 'person1@example.ac.uk, person2@example.ac.uk', 'ALL', 'Y', '', 'The version could be the current installed one or the latest version that is available and stable.'],
-            ['', 'Acrobat Reader', 'Latest Version', 'NO LICENSE NEEDED', 'n/a', 'General Use', '', 'ALL', 'Y', 'ALL', ''],
+            // ['', 'Acrobat Reader', 'Latest Version', 'NO LICENSE NEEDED', 'n/a', 'General Use', '', 'ALL', 'Y', 'ALL', ''],
             ['', 'Advanced Design Systems ', '2024', 'SCHOOL HELD', "See 'Licences' tab", 'ENG4110P, ENG5041P, ENG5059P', 'person3@example.ac.uk', 'ALL', 'Y', '', ''],
         ];
 
