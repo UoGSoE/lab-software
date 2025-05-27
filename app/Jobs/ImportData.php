@@ -8,6 +8,8 @@ use App\Models\Software;
 use App\Rules\CourseCode;
 use Illuminate\Support\Str;
 use App\Models\AcademicSession;
+use App\Mail\ImportCompleteEmail;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -28,7 +30,6 @@ class ImportData implements ShouldQueue
     {
         $academicSession = AcademicSession::findOrFail($this->academicSessionId);
         $user = User::findOrFail($this->userId);
-
         $errors = collect($this->data)->map(function ($row) use ($academicSession) {
             if (strtolower($row[1]) == 'application') {
                 // skip likely header row
@@ -48,7 +49,7 @@ class ImportData implements ShouldQueue
             $validated = $validator->validated();
 
             // ------ Use 'CSCE' column for figuring out global or not - should be 'Y' or 'N'  --------
-            if (empty($validated['courses'])) {
+            if (str_starts_with(strtolower($validated['csce']), 'y')) {
                 $this->handleGlobalSoftware($validated, $academicSession->id);
             } else {
                 $this->handleCourseSpecificSoftware($validated, $academicSession->id);
@@ -57,7 +58,7 @@ class ImportData implements ShouldQueue
             return '';
         })->filter();
 
-        dd("TODO: send email to user with errors");
+        Mail::to(User::find($this->userId))->queue(new ImportCompleteEmail($errors));
     }
 
     private function createNewUser(string $email, int $academicSessionId): User
@@ -78,19 +79,20 @@ class ImportData implements ShouldQueue
 
     public function handleCourseSpecificSoftware(array $validatedRow, int $academicSessionId)
     {
-        $software = Software::firstOrCreate([
+        $software = Software::firstOrNew([
             'name' => $validatedRow['software_name'],
             'version' => $validatedRow['software_version'],
             'config' => $validatedRow['request_notes'],
             'notes' => $validatedRow['request_notes_2'],
-            'os' => $validatedRow['os'],
-            'building' => $validatedRow['building'],
-            'lab' => $validatedRow['lab'],
+            'room' => $validatedRow['room'],
             'academic_session_id' => $academicSessionId,
         ]);
 
         if ($software->wasRecentlyCreated) {
             $software->is_new = true;
+        }
+
+        if (! $software->created_by) {
             $software->created_by = $this->userId;
         }
 
@@ -111,22 +113,46 @@ class ImportData implements ShouldQueue
             ]);
 
             $course->software()->attach($software);
-        }
 
-        foreach ($validatedRow['course_contacts'] as $contact) {
-            $contact = trim(strtolower($contact));
-            $user = User::where('email', '=', $contact)->first();
-            if (! $user) {
-                $user = $this->createNewUser($contact, $academicSessionId);
+            foreach ($validatedRow['course_contacts'] as $contact) {
+                $contact = trim(strtolower($contact));
+                $user = User::where('email', '=', $contact)->first();
+                if (! $user) {
+                    $user = $this->createNewUser($contact, $academicSessionId);
+                }
+
+                $course->users()->attach($user);
             }
-
-            $course->users()->attach($user);
         }
+
     }
 
     public function handleGlobalSoftware(array $validatedRow, int $academicSessionId)
     {
+        $software = Software::firstOrNew([
+            'name' => $validatedRow['software_name'],
+            'version' => $validatedRow['software_version'],
+            'config' => $validatedRow['request_notes'],
+            'notes' => $validatedRow['request_notes_2'],
+            'room' => $validatedRow['room'],
+            'academic_session_id' => $academicSessionId,
+        ]);
 
+        if ($software->wasRecentlyCreated) {
+            $software->is_new = true;
+        }
+
+        if (! $software->created_by) {
+            $software->created_by = $this->userId;
+        }
+
+        // update the existing licence details if they are empty or the incoming ones are not empty
+        if ( (! $software->licence_type) || $validatedRow['licence_type'] !== '') {
+            $software->licence_type = $validatedRow['licence_type'];
+            $software->licence_details = $validatedRow['licence_details'];
+        }
+
+        $software->save();
     }
 
     private function expandRow(array $row): array
@@ -139,6 +165,9 @@ class ImportData implements ShouldQueue
         $expandedRow['licence_details'] = trim($row[4]);
         $expandedRow['courses'] = explode(',', strtoupper(Str::replace(' ', '', $row[5])));
         $expandedRow['course_contacts'] = explode(',', strtolower(Str::replace(' ', '', $row[6])));
+        $expandedRow['room'] = trim($row[7] ?? '');
+        $expandedRow['csce'] = trim($row[8] ?? '');
+        $expandedRow['eng_builds'] = trim($row[9] ?? '');
         $expandedRow['request_notes'] = trim($row[10] ?? '');
         $expandedRow['request_notes_2'] = trim($row[11] ?? '');
         return $expandedRow;
@@ -147,21 +176,25 @@ class ImportData implements ShouldQueue
     private function validateRow(array $row)
     {
         $expandedRow = $this->expandRow($row);
-        $validator = Validator::make($expandedRow, [
+        $isGlobal = str_starts_with(strtolower($expandedRow['csce']), 'y');
+        $rules = [
             'software_name' => 'required|string',
             'software_version' => 'required|string',
             'licence_type' => 'required|string',
             'licence_details' => 'required|string',
-            'courses' => 'required|array',
-            'courses.*' => ['required', 'string', new CourseCode],
             'course_contacts' => 'required|array',
             'course_contacts.*' => 'nullable|email:strict',
             'request_notes' => 'nullable|string',
             'request_notes_2' => 'nullable|string',
-            'rooms' => 'nullable|string',
+            'room' => 'nullable|string',
             'csce' => 'nullable|string',
             'eng_builds' => 'nullable|string',
-        ]);
+        ];
+        if (! $isGlobal) {
+            $rules['courses'] = 'required|array';
+            $rules['courses.*'] = ['nullable', new CourseCode];
+        }
+        $validator = Validator::make($expandedRow, $rules);
 
         return $validator;
     }
