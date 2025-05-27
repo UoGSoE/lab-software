@@ -91,7 +91,13 @@ describe('Importing data', function () {
             expect($course->software->pluck('name'))->toContain('Advanced Design Systems');
         }
 
-        Mail::assertQueued(ImportCompleteEmail::class);
+        Mail::assertQueued(ImportCompleteEmail::class, 1);
+        Mail::assertQueued(ImportCompleteEmail::class, function ($mail) {
+            expect($mail->errors)->toBeCollection();
+            expect($mail->errors)->toHaveCount(0);
+            expect($mail->hasTo($this->admin->email))->toBeTrue();
+            return true;
+        });
 
     });
 
@@ -99,9 +105,9 @@ describe('Importing data', function () {
         $testData = [
             ['', 'Application', 'Version', 'Licene Type', 'Licene Details', 'COURSE', 'COURSE CONTACT', 'ROOM', 'CSCE', 'ENG BUILDS', 'Request Notes', 'Request Notes 2'],
             ['', '7-Zip', '24.06', 'NO LICENSE NEEDED', 'n/a', 'General Use', '', 'ALL', 'Y', 'ALL', ''],
-            ['', 'Abaqus ', 'Latest Version', 'SCHOOL HELD', "See 'Licences' tab", 'ENG4094, ENG5053, ENG5096', 'person1@example.ac.uk, person2@example.ac.uk', 'ALL', 'Y', '', 'The version could be the current installed one or the latest version that is available and stable.'],
+            ['', 'Abaqus ', 'Latest Version', 'SCHOOL HELD', "See 'Licences' tab", 'ENG4094, ENG5053, ENG5096', 'person1@example.ac.uk, person2@example.ac.uk', 'ALL', 'N', '', 'The version could be the current installed one or the latest version that is available and stable.'],
             ['', 'Acrobat Reader', 'Latest Version', 'NO LICENSE NEEDED', 'n/a', 'General Use', '', 'ALL', 'Y', 'ALL', ''],
-            ['', 'Advanced Design Systems ', '2024', 'SCHOOL HELD', "See 'Licences' tab", 'ENG4110P, ENG5041P, ENG5059P', 'person3@example.ac.uk', 'ALL', 'Y', '', ''],
+            ['', 'Advanced Design Systems ', '2024', 'SCHOOL HELD', "See 'Licences' tab", 'ENG4110P, ENG5041P, ENG5059P', 'person3@example.ac.uk', 'ALL', 'N', '', ''],
         ];
 
         $existingCourse = Course::factory()->create([
@@ -112,6 +118,11 @@ describe('Importing data', function () {
             'name' => 'Abaqus',
             'academic_session_id' => $this->academicSession->id,
             'version' => 'Latest Version',
+            'licence_type' => 'SCHOOL HELD',
+            'licence_details' => "See 'Licences' tab",
+            'config' => 'The version could be the current installed one or the latest version that is available and stable.',
+            'notes' => '',
+            'lab' => 'ALL',
         ]);
         $existingCourse->software()->attach($existingSoftware);
         $existingUser = User::factory()->create([
@@ -153,6 +164,56 @@ describe('Importing data', function () {
             expect($course->software->count())->toBe(1);
             expect($course->software->pluck('name'))->toContain('Advanced Design Systems');
         }
+    });
+
+    it('Any rows with errors are included in the email to the admin', function () {
+        Mail::fake();
+        $testData = [
+            ['', 'Application', 'Version', 'Licene Type', 'Licene Details', 'COURSE', 'COURSE CONTACT', 'ROOM', 'CSCE', 'ENG BUILDS', 'Request Notes', 'Request Notes 2'],
+            ['', '', '24.06', 'NO LICENSE NEEDED', 'n/a', 'General Use', '', 'ALL', 'Y', 'ALL', ''],
+            ['', 'Abaqus ', 'Latest Version', 'SCHOOL HELD', "See 'Licences' tab", 'ENG4094, ENG5053, ENG5096', 'person1............@example.ac.uk, person2@example.ac.uk', 'ALL', 'N', '', 'The version could be the current installed one or the latest version that is available and stable.'],
+            ['', 'Acrobat Reader', 'Latest Version', 'NO LICENSE NEEDED', 'n/a', 'General Use', '', 'ALL', 'Y', 'ALL', ''],
+            ['', 'Advanced Design Systems ', '2024', 'SCHOOL HELD', "See 'Licences' tab", 'ENG4110P, ENG5041P, ENG5059P', 'person3@example.ac.uk', 'ALL', 'N', '', ''],
+        ];
+
+        expect(Software::count())->toBe(0);
+        expect(Course::count())->toBe(0);
+        expect(User::count())->toBe(1);  // 1 admin user
+
+        ImportData::dispatchSync($testData, $this->academicSession->id, $this->admin->id);
+
+        expect(Software::count())->toBe(2); // We do not create a record for the row with no application name or the one with an invalid email address
+        expect(Course::count())->toBe(3);
+        expect(User::count())->toBe(2);  // 1 from the import + 1 admin user and we skip the row with the person with an invalid email address
+
+        foreach (['ENG4094', 'ENG5053', 'ENG5096'] as $courseCode) {
+            $course = Course::where('code', '=', $courseCode)->first();
+            expect($course)->toBeNull();
+        }
+
+        foreach (['ENG4110P', 'ENG5041P', 'ENG5059P'] as $courseCode) {
+            $course = Course::where('code', '=', $courseCode)->first();
+            expect($course)->not->toBeNull();
+            expect($course->academic_session_id)->toBe($this->academicSession->id);
+            expect($course->users->count())->toBe(1);
+            expect($course->users->pluck('email'))->toContain('person3@example.ac.uk');
+
+            expect($course->software->count())->toBe(1);
+            expect($course->software->pluck('name'))->toContain('Advanced Design Systems');
+        }
+
+        Mail::assertQueued(ImportCompleteEmail::class, 1);
+        Mail::assertQueued(ImportCompleteEmail::class, function ($mail) {
+            expect($mail->errors)->toBeCollection();
+            expect($mail->errors)->toHaveCount(2);
+            expect($mail->errors)
+                ->toContain('Error on row 2: The software name field is required.');
+            expect($mail->errors)
+                ->toContain('Error on row 3: The course_contacts.0 field must be a valid email address.');
+            expect($mail->hasTo($this->admin->email))->toBeTrue();
+            return true;
+        });
+
     });
 
 });
