@@ -263,6 +263,23 @@ describe('deadline notification', function () {
         Mail::assertQueued(SystemClosing::class, 2);
         Mail::assertQueued(SystemClosing::class, fn (SystemClosing $mail) => $mail->hasTo($user1->email));
         Mail::assertQueued(SystemClosing::class, fn (SystemClosing $mail) => $mail->hasTo($user2->email));
-
     });
+
+    it('has the right contents in the closing mail', function () {
+        Setting::factory()->create([
+            'academic_session_id' => $this->academicSession->id,
+            'key' => 'notifications.closing_date',
+            'value' => now()->addDays(7)->format('Y-m-d'),  // we send the notification 7 days before the closing date
+        ]);
+
+        $user1 = User::factory()->create([
+            'academic_session_id' => $this->academicSession->id,
+        ]);
+
+        $mailable = new SystemClosing($user1);
+        $mailable->assertSeeInText('Lab Software System closing soon');
+        $mailable->assertSeeInText("The system is closing on " . now()->addDays(7)->format('d/m/Y'));
+        $mailable->assertSeeInText(route('home'));
+    });
+
 });

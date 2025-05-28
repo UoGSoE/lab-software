@@ -15,7 +15,7 @@
 
                     <flux:input type="number" label="Number of days before those dates to send reminders" name="reminder_days" value="7" min="0" />
 
-                    <flux:button type="submit">Update</flux:button>
+                    <flux:button class="cursor-pointer" type="submit">Update</flux:button>
                 </form>
             </flux:card>
         </div>
@@ -25,7 +25,7 @@
                 <div class="flex flex-row justify-between items-center">
                     <flux:heading size="lg">Schools</flux:heading>
                     <flux:modal.trigger name="create-new-school">
-                        <flux:button type="button" icon="plus"></flux:button>
+                        <flux:button class="cursor-pointer" type="button" icon="plus"></flux:button>
                     </flux:modal.trigger>
                 </div>
 
@@ -34,8 +34,8 @@
                         <li class="flex flex-row justify-between items-center">
                             <span>{{ $school->name }} <flux:badge>{{ $school->course_prefix }}</flux:badge></span>
                             <span>
-                                <flux:button type="button" icon="pencil" wire:click="editSchool({{ $school->id }})"></flux:button>
-                                <flux:button type="button" icon="trash" wire:confirm="Are you sure you want to delete this school ({{ $school->name }})? This action cannot be undone." wire:click="deleteSchool({{ $school->id }})"></flux:button>
+                                <flux:button class="cursor-pointer" type="button" icon="pencil" wire:click="editSchool({{ $school->id }})"></flux:button>
+                                <flux:button class="cursor-pointer" type="button" icon="trash" wire:confirm="Are you sure you want to delete this school ({{ $school->name }})? This action cannot be undone." wire:click="deleteSchool({{ $school->id }})"></flux:button>
                             </span>
                         </li>
                     @endforeach
@@ -48,13 +48,23 @@
                 <div class="flex flex-row justify-between items-center">
                     <flux:heading size="lg">Academic sessions</flux:heading>
                     <flux:modal.trigger name="create-new-session">
-                        <flux:button type="button" icon="plus"></flux:button>
+                        <flux:button class="cursor-pointer" type="button" icon="plus"></flux:button>
                     </flux:modal.trigger>
                 </div>
 
                 <ul class="space-y-2">
                     @foreach ($academicSessions as $academicSession)
-                        <li>{{ $academicSession->name }} @if ($academicSession->is_default) <flux:badge inset="top bottom">Default</flux:badge>@endif</li>
+                        <li class="flex flex-row justify-between items-center">
+                            <span>
+                                {{ $academicSession->name }}
+                            </span>
+
+                            @if ($academicSession->is_default)
+                                <flux:badge color="blue" inset="top bottom">Default</flux:badge>
+                            @else
+                                <flux:button class="cursor-pointer" size="xs" variant="subtle" inset wire:click="updateDefaultSession({{ $academicSession->id }})">Make default</flux:button>
+                            @endif
+                        </li>
                     @endforeach
                 </ul>
             </flux:card>

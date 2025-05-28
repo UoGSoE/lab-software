@@ -158,7 +158,7 @@ describe('interacting with the existing software', function () {
             ->assertSee($this->software->config)
             ->assertSee($this->software->notes)
             ->assertSee($this->software->os)
-            ->assertSee($this->software->building)
+            // ->assertSee($this->software->building) // See Software::getLocationAttribute()
             ->assertSee($this->software->lab)
             ->assertSee($this->software->version);
     });

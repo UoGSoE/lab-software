@@ -15,14 +15,11 @@
 
     <!-- filters -->
     <div class="flex flex-col md:flex-row gap-2 pt-6">
-        <flux:select wire:model.live="filters.school" placeholder="Choose school..." label="Filter by school">
+        <flux:select wire:model.live="filters.school" label="Filter by school">
             <flux:select.option value="">All</flux:select.option>
-            <flux:select.option value="ENG">Engineering</flux:select.option>
-            <flux:select.option value="COMP">CompSci</flux:select.option>
-            <flux:select.option value="PHAS">PHAS</flux:select.option>
-            <flux:select.option value="MATH">Maths & Stats</flux:select.option>
-            <flux:select.option value="GES">GES</flux:select.option>
-            <flux:select.option value="CHEM">Chemistry</flux:select.option>
+            @foreach ($availableSchools as $school)
+                <flux:select.option value="{{ $school->course_prefix }}">{{ $school->name }}</flux:select.option>
+            @endforeach
         </flux:select>
 
         <flux:input wire:model.live="filters.course" label="Course" placeholder="Eg, ENG1234" autofocus />

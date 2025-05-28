@@ -3,22 +3,26 @@
 namespace App\Mail;
 
 use App\Models\User;
+use App\Models\Setting;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
+use Illuminate\Support\Carbon;
 use Illuminate\Mail\Mailables\Content;
-use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Mail\Mailables\Envelope;
 
 class SystemClosing extends Mailable
 {
     use Queueable, SerializesModels;
+
+    public $closingDate;
 
     /**
      * Create a new message instance.
      */
     public function __construct(public User $user)
     {
-        $this->user = $user;
+        $this->closingDate = Setting::where('key', 'notifications.closing_date')->first()->toDate()->format('d/m/Y');
     }
 
     /**
@@ -40,6 +44,7 @@ class SystemClosing extends Mailable
             markdown: 'emails.system_closing',
             with: [
                 'user' => $this->user,
+                'closingDate' => $this->closingDate,
             ],
         );
     }

@@ -12,18 +12,18 @@
     <flux:separator class="mt-6 mb-6" />
 
     <flux:table :paginate="$users">
-        <flux:columns>
-            <flux:column>Name</flux:column>
-            <flux:column>Email</flux:column>
-            <flux:column>Signed off</flux:column>
-            <flux:column>Actions</flux:column>
-        </flux:columns>
+        <flux:table.columns>
+            <flux:table.column>Name</flux:table.column>
+            <flux:table.column>Email</flux:table.column>
+            <flux:table.column>Signed off</flux:table.column>
+            <flux:table.column>Actions</flux:table.column>
+        </flux:table.columns>
         @foreach ($users as $user)
-            <flux:row>
-                <flux:cell>@if ($user->is_admin) <flux:badge color="emerald">Admin</flux:badge> @endif {{ $user->surname }}, {{ $user->forenames }}</flux:cell>
-                <flux:cell><a href="mailto:{{ $user->email }}">{{ $user->email }}</a></flux:cell>
-                <flux:cell>@foreach($user->courses as $course) <flux:badge>{{ $course->code }} {{ $course->pivot->created_at->format('d/m/y') }}</flux:badge>@endforeach</flux:cell>
-                <flux:cell>
+            <flux:table.row>
+                <flux:table.cell>@if ($user->is_admin) <flux:badge color="emerald">Admin</flux:badge> @endif {{ $user->surname }}, {{ $user->forenames }}</flux:table.cell>
+                <flux:table.cell><a href="mailto:{{ $user->email }}">{{ $user->email }}</a></flux:table.cell>
+                <flux:table.cell>@foreach($user->courses as $course) <flux:badge>{{ $course->code }} {{ $course->pivot->created_at->format('d/m/y') }}</flux:badge>@endforeach</flux:table.cell>
+                <flux:table.cell>
                     <flux:dropdown>
                         <flux:button icon="ellipsis-horizontal" variant="ghost" inset />
                         <flux:navmenu>
@@ -33,8 +33,8 @@
                             <flux:navmenu.item href="#" icon="trash" variant="danger">Delete</flux:navmenu.item>
                         </flux:navmenu>
                     </flux:dropdown>
-                </flux:cell>
-            </flux:row>
+                </flux:table.cell>
+            </flux:table.row>
         @endforeach
     </flux:table>
 </div>

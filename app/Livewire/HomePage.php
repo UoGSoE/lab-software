@@ -2,15 +2,17 @@
 
 namespace App\Livewire;
 
-use App\Models\AcademicSession;
-use App\Models\Course;
-use App\Models\Software;
 use Flux\Flux;
-use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Arr;
-use Illuminate\Validation\Rule;
+use App\Models\Course;
+use App\Models\School;
 use Livewire\Component;
+use App\Models\Software;
+use Illuminate\Support\Arr;
 use Livewire\WithPagination;
+use App\Models\AcademicSession;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class HomePage extends Component
 {
@@ -19,6 +21,8 @@ class HomePage extends Component
     public string $currentSessionName = '';
 
     public ?Software $softwareDetails = null;
+
+    public Collection $availableSchools;
 
     public array $newSoftware = [
         'os' => ['Windows'],
@@ -41,9 +45,9 @@ class HomePage extends Component
 
     public function mount()
     {
-        // $this->filters['school'] = request()->user()->school;
         $this->currentSessionName = AcademicSession::getUsersSession()?->name;
         $this->softwareDetails = new Software;
+        $this->availableSchools = School::orderBy('name')->get();
     }
 
     public function render()

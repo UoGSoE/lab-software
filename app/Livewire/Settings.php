@@ -103,7 +103,7 @@ class Settings extends Component
 
         $school = School::create([
             'name' => $this->newSchoolName,
-            'course_prefix' => $this->newSchoolCoursePrefix,
+            'course_prefix' => strtoupper($this->newSchoolCoursePrefix),
         ]);
 
         Flux::toast("New school {$this->newSchoolName} created!", variant: 'success');
@@ -113,18 +113,9 @@ class Settings extends Component
         $this->modal('create-new-school')->close();
     }
 
-    public function updateDefaultSession()
+    public function updateDefaultSession(int $newDefaultId)
     {
-        $this->validate([
-            'defaultSessionId' => 'required|exists:academic_sessions,id',
-        ]);
-
-        $academicSession = AcademicSession::find($this->defaultSessionId);
-        if (! $academicSession) {
-            Flux::toast('Academic session not found', variant: 'danger');
-
-            return;
-        }
+        $academicSession = AcademicSession::findOrFail($newDefaultId);
 
         $academicSession->setAsDefault();
 
@@ -163,7 +154,7 @@ class Settings extends Component
         }
 
         $school->name = $this->editSchoolName;
-        $school->course_prefix = $this->editSchoolCoursePrefix;
+        $school->course_prefix = strtoupper($this->editSchoolCoursePrefix);
         $school->save();
 
         $this->reset('editSchoolId', 'editSchoolName', 'editSchoolCoursePrefix');

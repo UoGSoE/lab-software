@@ -67,8 +67,7 @@ describe('The livewire settings page', function () {
         actingAs($this->admin);
 
         livewire(Settings::class)
-            ->set('defaultSessionId', $secondSession->id)
-            ->call('updateDefaultSession')
+            ->call('updateDefaultSession', $secondSession->id)
             ->assertHasNoErrors();
 
         $this->assertTrue($secondSession->fresh()->is_default);
@@ -90,6 +89,21 @@ describe('The livewire settings page', function () {
         ]);
     });
 
+    it('correctly capitalises the course prefix', function () {
+        actingAs($this->admin);
+
+        livewire(Settings::class)
+            ->set('newSchoolName', 'Test School')
+            ->set('newSchoolCoursePrefix', 'test')
+            ->call('createNewSchool')
+            ->assertHasNoErrors();
+
+        $this->assertDatabaseHas('schools', [
+            'name' => 'Test School',
+            'course_prefix' => 'TEST',
+        ]);
+    });
+
     it('allows admins to update a school', function () {
         $school = School::factory()->create([
             'name' => 'Test School',
@@ -100,7 +114,7 @@ describe('The livewire settings page', function () {
         livewire(Settings::class)
             ->set('editSchoolId', $school->id)
             ->set('editSchoolName', 'Updated School')
-            ->set('editSchoolCoursePrefix', 'UPD')
+            ->set('editSchoolCoursePrefix', 'upd')
             ->call('updateSchool')
             ->assertHasNoErrors();
 
@@ -110,7 +124,7 @@ describe('The livewire settings page', function () {
         ]);
         $this->assertDatabaseHas('schools', [
             'name' => 'Updated School',
-            'course_prefix' => 'UPD',
+            'course_prefix' => 'UPD',  // automatically capitalised
         ]);
     });
 
