@@ -8,30 +8,68 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-@theme {
-  --font-sans: Inter, sans-serif;
-}
 
-/* Re-assign Flux's gray of choice... */
+/* Custom theme overriding Tailwind's blue scale with your organization color */
 @theme {
-  --color-zinc-50: var(--color-gray-50);
-  --color-zinc-100: var(--color-gray-100);
-  --color-zinc-200: var(--color-gray-200);
-  --color-zinc-300: var(--color-gray-300);
-  --color-zinc-400: var(--color-gray-400);
-  --color-zinc-500: var(--color-gray-500);
-  --color-zinc-600: var(--color-gray-600);
-  --color-zinc-700: var(--color-gray-700);
-  --color-zinc-800: var(--color-gray-800);
-  --color-zinc-900: var(--color-gray-900);
-  --color-zinc-950: var(--color-gray-950);
-}
+  /* Override the entire blue color scale */
+  --color-blue-50: #f0f7ff;
+  --color-blue-100: #e0efff;
+  --color-blue-200: #c7e2ff;
+  --color-blue-300: #a4d0ff;
+  --color-blue-400: #7bb8ff;
+  --color-blue-500: #005398; /* Your organization blue */
+  --color-blue-600: #004080;
+  --color-blue-700: #003366;
+  --color-blue-800: #002952;
+  --color-blue-900: #001a33;
+  --color-blue-950: #000d1a;
 
-@theme {
-  --color-accent: var(--color-sky-600);
-  --color-accent-content: var(--color-sky-600);
+  /* If you want to also update Flux's accent colors to use your blue */
+  --color-accent: var(--color-blue-500);
+  --color-accent-content: var(--color-blue-100);
   --color-accent-foreground: var(--color-white);
 }
+
+@layer theme {
+  .dark {
+    /* Adjust blue scale for dark mode if needed */
+    --color-blue-50: #001a33;
+    --color-blue-100: #002952;
+    --color-blue-200: #003366;
+    --color-blue-300: #004080;
+    --color-blue-400: #0066cc;
+    --color-blue-500: #005398; /* Keep your main blue consistent */
+    --color-blue-600: #4d94d9;
+    --color-blue-700: #7bb8ff;
+    --color-blue-800: #a4d0ff;
+    --color-blue-900: #c7e2ff;
+    --color-blue-950: #e0efff;
+
+    /* Dark mode accent colors */
+    --color-accent: var(--color-blue-500);
+    --color-accent-content: var(--color-blue-400);
+    --color-accent-foreground: var(--color-white);
+  }
+}
+
+@theme {
+  --font-sans: Inter, sans-serif;
+/*    --color-accent: var(--color-sky-800);
+    --color-accent-content: var(--color-sky-600);
+    --color-accent-foreground: var(--color-white);
+*/
+}
+/*
+@layer theme {
+    .dark {
+        --color-accent: var(--color-sky-800);
+        --color-accent-content: var(--color-sky-300);
+        --color-accent-foreground: var(--color-white);
+    }
+}
+
+
+*/
 
 /*
   The default border color has changed to `currentcolor` in Tailwind CSS v4,
@@ -51,10 +89,3 @@
   }
 }
 
-@layer theme {
-    .dark {
-        --color-accent: var(--color-sky-600);
-        --color-accent-content: var(--color-sky-400);
-        --color-accent-foreground: var(--color-white);
-    }
-}

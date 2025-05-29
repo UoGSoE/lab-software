@@ -34,7 +34,7 @@
             <form action="{{ route('import-software') }}" method="post" enctype="multipart/form-data" class="space-y-6">
                 @csrf
                 <flux:input type="file" name="importFile" />
-                <flux:button icon="arrow-down" type="submit" variant="primary">Import</flux:button>
+                <flux:button type="submit" variant="primary">Import</flux:button>
                 <flux:error name="importFile" />
             </form>
         </div>

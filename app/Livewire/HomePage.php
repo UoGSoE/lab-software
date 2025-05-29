@@ -113,12 +113,12 @@ class HomePage extends Component
             'newSoftware.version' => 'nullable|max:255',
             'newSoftware.building' => 'nullable|max:255',
             'newSoftware.lab' => 'nullable|max:255',
-            'newSoftware.config' => 'nullable|max:255',
-            'newSoftware.notes' => 'nullable|max:255',
+            'newSoftware.config' => 'nullable|max:1024',
+            'newSoftware.notes' => 'nullable|max:1024',
             'newSoftware.course_code' => 'required|max:255|regex:/^[a-zA-Z]+[0-9]+$/',
         ]);
 
-        $userId = 1;
+        $userId = auth()->user()->id;
         $newSoftware = $this->newSoftware;
         $newSoftware['created_by'] = $userId;
         $academicSession = AcademicSession::where('is_default', true)->first();
@@ -154,7 +154,7 @@ class HomePage extends Component
 
     public function viewSoftwareDetails(int $softwareId)
     {
-        $this->softwareDetails = Software::findOrFail($softwareId);
-        $this->modal('software-details')->show();
+        $this->softwareDetails = Software::with('createdBy')->findOrFail($softwareId);
+        $this->modal('view-software-details')->show();
     }
 }

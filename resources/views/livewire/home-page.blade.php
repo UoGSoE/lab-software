@@ -86,7 +86,9 @@
                                 <flux:dropdown>
                                     <flux:button icon="ellipsis-horizontal" variant="ghost" inset />
                                     <flux:navmenu>
-                                        <flux:navmenu.item icon="magnifying-glass">Details</flux:navmenu.item>
+                                        <flux:navmenu.item icon="magnifying-glass" wire:click="viewSoftwareDetails({{ $software->id }})">
+                                            Details
+                                        </flux:navmenu.item>
                                         <flux:navmenu.item href="#" icon="pencil">Change</flux:navmenu.item>
                                         <flux:navmenu.item href="#" icon="document-duplicate">New copy</flux:navmenu.item>
                                         <flux:menu.separator />
@@ -201,4 +203,73 @@
         @endif
     </flux:modal>
 
+    <flux:modal name="view-software-details" class="sm:w-full">
+        <div class="space-y-6">
+            <div class="space-y-2">
+                <flux:heading size="lg">Software details</flux:heading>
+                <flux:text>
+                    <span class="flex flex-row gap-2 items-center">
+                        <flux:icon.user size="sm" />
+                        @if ($softwareDetails->createdBy)
+                            {{ $softwareDetails->createdBy?->full_name }} : <a href="mailto:{{ $softwareDetails->createdBy?->email }}">{{ $softwareDetails->createdBy?->email }}</a>
+                        @else
+                            N/A
+                        @endif
+                    </span>
+
+                </flux:text>
+            </div>
+            <div class="flex flex-col md:flex-row gap-6">
+                <flux:card class="space-y-6">
+                    <div>
+                        <flux:heading>Basic details</flux:heading>
+                        <flux:text>* {{ $softwareDetails->name }}</flux:text>
+                        <flux:text>* {{ $softwareDetails->version ?? 'N/A' }}</flux:text>
+                        <flux:text>* {{ $softwareDetails->operating_systems }}</flux:text>
+                    </div>
+
+                    <div>
+                        <flux:heading>Lab</flux:heading>
+                        <flux:text>{{ $softwareDetails->lab ?? 'N/A' }}</flux:text>
+                    </div>
+
+                    <div>
+                        <flux:heading>Location</flux:heading>
+                        <flux:text>{{ $softwareDetails->location ?? 'N/A' }}</flux:text>
+                    </div>
+
+                    <div>
+                        <flux:heading>Free software?</flux:heading>
+                        <flux:text>{{ $softwareDetails->is_free ? 'Yes' : 'No' }}</flux:text>
+                    </div>
+
+                    <div>
+                        <flux:heading>Licence type</flux:heading>
+                        <flux:text>{{ $softwareDetails->licence_type ?? 'N/A' }}</flux:text>
+                    </div>
+
+                    <div>
+                        <flux:heading>Licence details</flux:heading>
+                        <flux:text>{{ $softwareDetails->licence_details ?? 'N/A' }}</flux:text>
+                    </div>
+                </flux:card>
+
+                <flux:card class="space-y-6 flex-1">
+                    <div>
+                        <flux:heading>Notes</flux:heading>
+                        <flux:text>{{ $softwareDetails->notes ?? 'N/A' }}</flux:text>
+                    </div>
+
+                    <div>
+                        <flux:heading>Configuration</flux:heading>
+                        <flux:text>{{ $softwareDetails->config ?? 'N/A' }}</flux:text>
+                    </div>
+                </flux:card>
+            </div>
+
+            <div class="flex justify-end">
+                <flux:button x-on:click="$flux.modal('view-software-details').close()">Close</flux:button>
+            </div>
+        </div>
+    </flux:modal>
 </div>

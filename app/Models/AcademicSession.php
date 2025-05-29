@@ -71,15 +71,18 @@ class AcademicSession extends Model
         $thisId = $this->id;
         DB::transaction(function () use ($newSession, $thisId) {
             $newSoftwareMap = [];
+            $newUserMap = [];
 
             foreach (User::withoutGlobalScope(AcademicSessionScope::class)->where('academic_session_id', $thisId)->get() as $user) {
                 $newUser = $user->replicate();
                 $newUser->academic_session_id = $newSession->id;
                 $newUser->save();
+                $newUserMap[$user->id] = $newUser->id;
             }
             foreach (Software::withoutGlobalScope(AcademicSessionScope::class)->where('academic_session_id', $thisId)->get() as $software) {
                 $newSoftware = $software->replicate();
                 $newSoftware->academic_session_id = $newSession->id;
+                $newSoftware->created_by = $newUserMap[$software->created_by] ?? null;
                 $newSoftware->save();
                 if (! isset($newSoftwareMap[$software->id])) {
                     $newSoftwareMap[$software->id] = [];

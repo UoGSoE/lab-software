@@ -2,14 +2,15 @@
 
 namespace App\Mail;
 
-use App\Models\Scopes\AcademicSessionScope;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
-use Illuminate\Mail\Mailables\Content;
-use Illuminate\Mail\Mailables\Envelope;
-use Illuminate\Queue\SerializesModels;
+use App\Models\AcademicSession;
 use Illuminate\Support\Collection;
+use Illuminate\Mail\Mailables\Content;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Mail\Mailables\Envelope;
+use App\Models\Scopes\AcademicSessionScope;
 
 class SystemOpen extends Mailable
 {
@@ -22,8 +23,15 @@ class SystemOpen extends Mailable
     public function __construct(User $user)
     {
         $this->user = $user;
+        $currentSession = AcademicSession::getDefault();
+        $previousSession = $currentSession->getPrevious();
+        $lastYearsUser = User::withoutGlobalScope(AcademicSessionScope::class)
+                            ->where('academic_session_id', $previousSession->id)->find($user->id);
+        if (! $lastYearsUser) {
+            $lastYearsUser = $user;
+        }
         // build a collection of course codes, each with a collection of software names & versions
-        $this->softwareList = $user->courses()->withoutGlobalScope(AcademicSessionScope::class)
+        $this->softwareList = $lastYearsUser->courses()->withoutGlobalScope(AcademicSessionScope::class)
             ->get()
             ->reject(
                 fn ($course) => $course->software()->withoutGlobalScope(AcademicSessionScope::class)->count() === 0

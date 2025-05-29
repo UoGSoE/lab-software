@@ -3,7 +3,7 @@
 
     <flux:separator class="mt-6 mb-6" />
 
-    <div class="grid auto-cols-max grid-flow-row md:grid-flow-col gap-4">
+    <div class="grid auto-cols-max grid-flow-row lg:grid-flow-col gap-4">
         <div class="">
             <flux:card>
                 <form class="space-y-6">
@@ -60,7 +60,7 @@
                             </span>
 
                             @if ($academicSession->is_default)
-                                <flux:badge color="blue" inset="top bottom">Default</flux:badge>
+                                <flux:badge color="sky" inset="top bottom">Default</flux:badge>
                             @else
                                 <flux:button class="cursor-pointer" size="xs" variant="subtle" inset wire:click="updateDefaultSession({{ $academicSession->id }})">Make default</flux:button>
                             @endif
