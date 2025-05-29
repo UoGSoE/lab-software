@@ -82,7 +82,7 @@ class AcademicSession extends Model
             foreach (Software::withoutGlobalScope(AcademicSessionScope::class)->where('academic_session_id', $thisId)->get() as $software) {
                 $newSoftware = $software->replicate();
                 $newSoftware->academic_session_id = $newSession->id;
-                $newSoftware->created_by = $newUserMap[$software->created_by] ?? null;
+                $newSoftware->created_by = $newUserMap[$software->created_by];
                 $newSoftware->save();
                 if (! isset($newSoftwareMap[$software->id])) {
                     $newSoftwareMap[$software->id] = [];

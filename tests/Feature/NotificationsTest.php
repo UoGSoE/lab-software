@@ -199,6 +199,10 @@ describe('system open notification', function () {
         $user = User::factory()->create([
             'academic_session_id' => $oldSession->id,
         ]);
+        $otherUser = User::factory()->create([
+            'academic_session_id' => $oldSession->id,
+            'email' => 'otheruser@example.com',
+        ]);
         $course1 = Course::factory()->create([
             'academic_session_id' => $oldSession->id,
             'code' => 'CRS1234',
@@ -210,10 +214,12 @@ describe('system open notification', function () {
         $software1 = Software::factory()->create([
             'academic_session_id' => $oldSession->id,
             'name' => 'Software 1',
+            'created_by' => $otherUser->id,
         ]);
         $software2 = Software::factory()->create([
             'academic_session_id' => $oldSession->id,
             'name' => 'Software 2',
+            'created_by' => $otherUser->id,
         ]);
         $course1->software()->withoutGlobalScope(AcademicSessionScope::class)->attach($software1);
         $course2->software()->withoutGlobalScope(AcademicSessionScope::class)->attach($software2);

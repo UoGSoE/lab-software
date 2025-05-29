@@ -25,6 +25,9 @@ class SystemOpen extends Mailable
         $this->user = $user;
         $currentSession = AcademicSession::getDefault();
         $previousSession = $currentSession->getPrevious();
+        if (! $previousSession) {
+            $previousSession = $currentSession;
+        }
         $lastYearsUser = User::withoutGlobalScope(AcademicSessionScope::class)
                             ->where('academic_session_id', $previousSession->id)->find($user->id);
         if (! $lastYearsUser) {
