@@ -26,7 +26,7 @@ return new class extends Migration
             $table->text('licence_details')->nullable();
             $table->foreignId('created_by')->constrained('users');
             $table->foreignId('academic_session_id')->constrained('academic_sessions');
-            $table->foreignId('course_id')->constrained('courses')->nullable();
+            $table->foreignId('course_id')->nullable()->constrained('courses');
             $table->timestamps();
         });
     }

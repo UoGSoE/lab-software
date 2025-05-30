@@ -42,14 +42,13 @@ class ImportData implements ShouldQueue
 
             if ($validator->fails()) {
                 $combinedErrors = "Error on row {$currentRow}: " . implode(', ', $validator->errors()->all());
-
+                // No software is created for invalid rows
                 return $combinedErrors;
             }
 
             $validated = $validator->validated();
 
-            // ------ Use 'CSCE' column for figuring out global or not - should be 'Y' or 'N'  --------
-            // Note: this is an assumption on Billy's part - need to double-check with Lila
+            // Only create software for valid rows
             if ($this->isSoftwareGlobal($validated)) {
                 $this->handleGlobalSoftware($validated, $academicSession->id);
             } else {
@@ -78,16 +77,21 @@ class ImportData implements ShouldQueue
         return $user;
     }
 
-    private function createNewSoftware(array $validatedRow, int $academicSessionId): Software
+    private function createNewSoftware(array $validatedRow, int $academicSessionId, int $courseId = null): Software
     {
-        $software = Software::firstOrNew([
+        $attributes = [
             'name' => $validatedRow['software_name'],
             'version' => $validatedRow['software_version'],
             'config' => $validatedRow['request_notes'],
             'notes' => $validatedRow['request_notes_2'],
             'lab' => $validatedRow['room'],
             'academic_session_id' => $academicSessionId,
-        ]);
+        ];
+        if ($courseId !== null) {
+            $attributes['course_id'] = $courseId;
+        }
+
+        $software = Software::firstOrNew($attributes);
 
         if ($software->wasRecentlyCreated) {
             $software->is_new = true;
@@ -98,7 +102,7 @@ class ImportData implements ShouldQueue
         }
 
         // update the existing licence details if they are empty or the incoming ones are not empty
-        if ( (! $software->licence_type) || $validatedRow['licence_type'] !== '') {
+        if ((! $software->licence_type) || $validatedRow['licence_type'] !== '') {
             $software->licence_type = $validatedRow['licence_type'];
             $software->licence_details = $validatedRow['licence_details'];
         }
@@ -110,8 +114,6 @@ class ImportData implements ShouldQueue
 
     public function handleCourseSpecificSoftware(array $validatedRow, int $academicSessionId)
     {
-        $software = $this->createNewSoftware($validatedRow, $academicSessionId);
-
         foreach ($validatedRow['courses'] as $courseCode) {
             $course = Course::firstOrCreate([
                 'code' => $courseCode,
@@ -120,7 +122,8 @@ class ImportData implements ShouldQueue
                 'title' => $courseCode,
             ]);
 
-            $course->software()->syncWithoutDetaching([$software->id]);
+            // Create software with course_id set
+            $software = $this->createNewSoftware($validatedRow, $academicSessionId, $course->id);
 
             foreach ($validatedRow['course_contacts'] as $contact) {
                 $contact = trim(strtolower($contact));

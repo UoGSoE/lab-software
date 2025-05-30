@@ -65,7 +65,7 @@ describe('Importing data', function () {
 
         ImportData::dispatchSync($testData, $this->academicSession->id, $this->admin->id);
 
-        expect(Software::count())->toBe(4);
+        expect(Software::count())->toBe(8);
         expect(Course::count())->toBe(6);
         expect(User::count())->toBe(4);  // 3 from the import + 1 admin user
 
@@ -140,7 +140,7 @@ describe('Importing data', function () {
 
         ImportData::dispatchSync($testData, $this->academicSession->id, $this->admin->id);
 
-        expect(Software::count())->toBe(4);
+        expect(Software::count())->toBe(8);
         expect(Course::count())->toBe(6);
         expect(User::count())->toBe(4);  // 2 from the import + 1 admin user + 1 existing user
 
@@ -183,7 +183,7 @@ describe('Importing data', function () {
 
         ImportData::dispatchSync($testData, $this->academicSession->id, $this->admin->id);
 
-        expect(Software::count())->toBe(2); // We do not create a record for the row with no application name or the one with an invalid email address
+        expect(Software::count())->toBe(4); // We do not create a record for the row with no application name or the one with an invalid email address, but we do create three copies of ADS
         expect(Course::count())->toBe(3);
         expect(User::count())->toBe(2);  // 1 from the import + 1 admin user and we skip the row with the person with an invalid email address
 
@@ -242,7 +242,9 @@ describe('Exporting data', function () {
                 'version' => $softwareVersions[$index],
             ]);
 
-            $course->software()->attach($software);
+            // New relationship: assign course_id
+            $software->course_id = $course->id;
+            $software->save();
         }
 
         $filename = (new ExportAllData)->export();
