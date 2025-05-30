@@ -124,7 +124,8 @@ describe('Importing data', function () {
             'notes' => '',
             'lab' => 'ALL',
         ]);
-        $existingCourse->software()->attach($existingSoftware);
+        $existingSoftware->course_id = $existingCourse->id;
+        $existingSoftware->save();
         $existingUser = User::factory()->create([
             'email' => 'person1@example.ac.uk',
             'academic_session_id' => $this->academicSession->id,

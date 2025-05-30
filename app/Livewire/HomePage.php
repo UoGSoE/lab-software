@@ -13,6 +13,7 @@ use App\Models\AcademicSession;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Auth;
 
 class HomePage extends Component
 {
@@ -77,7 +78,7 @@ class HomePage extends Component
             ->when(
                 trim($this->filters['course']), fn ($query) => $query->where('code', 'like', '%'.$this->filters['course'].'%')
             );
-        $userId = auth()->user()->id;
+        $userId = Auth::user()?->id ?? null;
         $courses = $courses->paginate(10);
         $courses->each(function ($course) use ($userId) {
             $course->signed_off = $course->users->contains($userId);
@@ -119,20 +120,11 @@ class HomePage extends Component
             'newSoftware.course_code' => 'required|max:255|regex:/^[a-zA-Z]+[0-9]+$/',
         ]);
 
-        $userId = auth()->user()->id;
+        $userId = Auth::user()?->id ?? null;
         $newSoftware = $this->newSoftware;
         $newSoftware['created_by'] = $userId;
         $academicSession = AcademicSession::where('is_default', true)->first();
         $newSoftware['academic_session_id'] = $academicSession->id;
-
-        $softwareData = Arr::except($newSoftware, ['course_code']);
-
-        if ($this->newSoftware['id']) {
-            $software = Software::findOrFail($this->newSoftware['id']);
-            $software->update($softwareData);
-        } else {
-            $software = Software::create($softwareData);
-        }
 
         $courseCode = strtoupper(trim($this->newSoftware['course_code']));
         $course = Course::where('code', '=', $courseCode)->first();
@@ -144,7 +136,16 @@ class HomePage extends Component
             ]);
         }
 
-        $course->software()->attach($software->id);
+        $softwareData = Arr::except($newSoftware, ['course_code']);
+        $softwareData['course_id'] = $course->id;
+
+        if ($this->newSoftware['id']) {
+            $software = Software::findOrFail($this->newSoftware['id']);
+            $software->update($softwareData);
+        } else {
+            $software = Software::create($softwareData);
+        }
+
 
         $this->modal('add-software')->close();
 

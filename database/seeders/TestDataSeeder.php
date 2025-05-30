@@ -50,8 +50,15 @@ class TestDataSeeder extends Seeder
         });
 
         Course::factory()->count(1000)->create(['academic_session_id' => $oldSession->id]);
-        foreach (Course::all() as $course) {
-            $course->software()->attach(Software::inRandomOrder()->limit(rand(1, 3))->pluck('id'));
+        $courses = Course::all();
+        $softwares = Software::all();
+        // Assign each course a single random software
+        foreach ($courses as $course) {
+            $software = Software::inRandomOrder()->whereNull('course_id')->first();
+            if ($software) {
+                $software->course_id = $course->id;
+                $software->save();
+            }
         }
         $schools = [
             [

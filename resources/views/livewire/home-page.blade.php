@@ -2,7 +2,7 @@
     <div class="flex flex-col md:flex-row justify-between gap-2 items-center">
         <div class="flex flex-row gap-2 items-center">
             <div>
-                <flux:heading size="xl">COSE teaching software</flux:heading>
+                <flux:heading size="xl">{{ config('app.name') }}</flux:heading>
                 <flux:subheading class="text-center md:text-left">Session {{ $academicSession }}</flux:subheading>
             </div>
         </div>

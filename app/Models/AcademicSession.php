@@ -84,17 +84,16 @@ class AcademicSession extends Model
                 $newSoftware->academic_session_id = $newSession->id;
                 $newSoftware->created_by = $newUserMap[$software->created_by];
                 $newSoftware->save();
-                if (! isset($newSoftwareMap[$software->id])) {
-                    $newSoftwareMap[$software->id] = [];
-                }
-                $newSoftwareMap[$software->id][] = $newSoftware->id;
+                $newSoftwareMap[$software->id] = $newSoftware->id;
             }
             foreach (Course::withoutGlobalScope(AcademicSessionScope::class)->where('academic_session_id', $thisId)->get() as $course) {
                 $newCourse = $course->replicate();
                 $newCourse->academic_session_id = $newSession->id;
                 $newCourse->save();
-                $course->software()->withoutGlobalScope(AcademicSessionScope::class)->get()->each(function ($software) use ($newCourse, $newSoftwareMap) {
-                    $newCourse->software()->attach($newSoftwareMap[$software->id]);
+                $course->software()->withoutGlobalScope(AcademicSessionScope::class)->where('academic_session_id', $thisId)->get()->each(function ($software) use ($newCourse, $newSoftwareMap) {
+                    $newSoftware = Software::withoutGlobalScope(AcademicSessionScope::class)->find($newSoftwareMap[$software->id]);
+                    $newSoftware->course_id = $newCourse->id;
+                    $newSoftware->save();
                 });
             }
         });

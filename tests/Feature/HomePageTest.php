@@ -17,10 +17,11 @@ beforeEach(function () {
 it('can be rendered', function () {
     $course = Course::factory()->create(['academic_session_id' => $this->session->id]);
     $software = Software::factory()->create(['name' => 'Test Software', 'academic_session_id' => $this->session->id]);
-    $software->courses()->attach($course->id);
+    $software->course_id = $course->id;
+    $software->save();
 
-    $this->actingAs($this->user)->get('/')
-        ->assertStatus(200)
+    actingAs($this->user);
+    livewire(HomePage::class)
         ->assertSee(config('app.name'))
         ->assertSee($this->session->name)
         ->assertSee('Test Software');
@@ -32,12 +33,15 @@ describe('we can filter in various ways', function () {
         $this->course2 = Course::factory()->create(['academic_session_id' => $this->session->id, 'code' => 'BEST2345']);
         $this->software1 = Software::factory()->create(['name' => 'Test Software QQQQQQ', 'academic_session_id' => $this->session->id]);
         $this->software2 = Software::factory()->create(['name' => 'Test Software ZZZZZZ', 'academic_session_id' => $this->session->id]);
-        $this->software1->courses()->attach($this->course1->id);
-        $this->software2->courses()->attach($this->course2->id);
+        $this->software1->course_id = $this->course1->id;
+        $this->software1->save();
+        $this->software2->course_id = $this->course2->id;
+        $this->software2->save();
     });
 
     it('can filter by course', function () {
-        actingAs($this->user)->livewire(HomePage::class)
+        actingAs($this->user);
+        livewire(HomePage::class)
             ->assertSee($this->course1->code)
             ->assertSee($this->course2->code)
             ->assertSee('Test Software QQQQQQ')
@@ -84,7 +88,8 @@ describe('requesting new software', function () {
     beforeEach(function () {
         $this->course = Course::factory()->create(['academic_session_id' => $this->session->id, 'code' => 'TEST1234']);
         $this->software = Software::factory()->create(['name' => 'Test Software', 'academic_session_id' => $this->session->id]);
-        $this->software->courses()->attach($this->course->id);
+        $this->software->course_id = $this->course->id;
+        $this->software->save();
     });
 
     it('works for the happy path', function () {
@@ -97,8 +102,7 @@ describe('requesting new software', function () {
 
         expect(Software::where('name', 'Test Software')->exists())->toBeTrue();
         expect(Software::where('name', 'Test Software 2')->exists())->toBeTrue();
-        expect(Software::where('name', 'Test Software 2')->first()->courses()->count())->toBe(1);
-        expect(Software::where('name', 'Test Software 2')->first()->courses()->first()->id)->toBe($this->course->id);
+        expect(Software::where('name', 'Test Software 2')->first()->course_id)->toBe($this->course->id);
     });
 
     it('flags missing required fields', function () {
@@ -128,7 +132,8 @@ describe('signing off on software', function () {
     beforeEach(function () {
         $this->software = Software::factory()->create(['academic_session_id' => $this->session->id]);
         $this->course = Course::factory()->create(['academic_session_id' => $this->session->id]);
-        $this->software->courses()->attach($this->course->id);
+        $this->software->course_id = $this->course->id;
+        $this->software->save();
     });
 
     it('allows staff to sign off the software for a course', function () {
@@ -146,7 +151,8 @@ describe('interacting with the existing software', function () {
     beforeEach(function () {
         $this->software = Software::factory()->create(['academic_session_id' => $this->session->id]);
         $this->course = Course::factory()->create(['academic_session_id' => $this->session->id]);
-        $this->software->courses()->attach($this->course->id);
+        $this->software->course_id = $this->course->id;
+        $this->software->save();
     });
 
     it('allows staff to see more details about the software', function () {
@@ -168,9 +174,9 @@ describe('interacting with the existing software', function () {
         livewire(HomePage::class)
             ->call('editSoftware', $this->software->id)
             ->assertHasNoErrors()
-            ->set('editSoftware.name', 'Test Software 2')
-            ->set('editSoftware.course_code', $this->course->code)
-            ->call('updateSoftware')
+            ->set('newSoftware.name', 'Test Software 2')
+            ->set('newSoftware.course_code', $this->course->code)
+            ->call('addSoftware')
             ->assertHasNoErrors();
 
         expect(Software::where('name', 'Test Software 2')->exists())->toBeTrue();

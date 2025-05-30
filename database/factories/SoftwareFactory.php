@@ -33,6 +33,7 @@ class SoftwareFactory extends Factory
             'academic_session_id' => AcademicSession::factory(),
             'is_new' => false,
             'is_free' => false,
+            'course_id' => \App\Models\Course::factory(),
         ];
     }
 

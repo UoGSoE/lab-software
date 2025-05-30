@@ -127,9 +127,12 @@ describe('system open notification', function () {
             'academic_session_id' => $oldSession->id,
             'code' => 'CRS9012',
         ]);
-        $course1->software()->withoutGlobalScope(AcademicSessionScope::class)->attach($software1);
-        $course1->software()->withoutGlobalScope(AcademicSessionScope::class)->attach($software2);
-        $course2->software()->withoutGlobalScope(AcademicSessionScope::class)->attach($software3);
+        $software1->course_id = $course1->id;
+        $software1->save();
+        $software2->course_id = $course1->id;
+        $software2->save();
+        $software3->course_id = $course2->id;
+        $software3->save();
         $user->courses()->withoutGlobalScope(AcademicSessionScope::class)->attach($course1);
         $user->courses()->withoutGlobalScope(AcademicSessionScope::class)->attach($course2);
 
@@ -173,7 +176,8 @@ describe('system open notification', function () {
             'academic_session_id' => $oldSession->id,
             'code' => 'CRS1234',
         ]);
-        $course1->software()->attach($software1);
+        $software1->course_id = $course1->id;
+        $software1->save();
         $user->load('courses.software');
 
         $mailable = new SystemOpen($user);
@@ -215,14 +219,14 @@ describe('system open notification', function () {
             'academic_session_id' => $oldSession->id,
             'name' => 'Software 1',
             'created_by' => $otherUser->id,
+            'course_id' => $course1->id,
         ]);
         $software2 = Software::factory()->create([
             'academic_session_id' => $oldSession->id,
             'name' => 'Software 2',
             'created_by' => $otherUser->id,
+            'course_id' => $course2->id,
         ]);
-        $course1->software()->withoutGlobalScope(AcademicSessionScope::class)->attach($software1);
-        $course2->software()->withoutGlobalScope(AcademicSessionScope::class)->attach($software2);
         $user->courses()->withoutGlobalScope(AcademicSessionScope::class)->attach($course1);
         $user->courses()->withoutGlobalScope(AcademicSessionScope::class)->attach($course2);
         $oldSession->copyForwardTo($this->academicSession);
