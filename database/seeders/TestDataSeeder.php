@@ -39,27 +39,24 @@ class TestDataSeeder extends Seeder
             'is_staff' => true,
             'academic_session_id' => $oldSession->id,
         ]);
+        $courses = Course::factory()->count(1000)->create(['academic_session_id' => $oldSession->id]);
         User::factory()->count(1000)->create([
             'academic_session_id' => $oldSession->id,
         ]);
-        User::take(300)->inRandomOrder()->get()->each(function ($user) use ($oldSession) {
+        User::take(300)->inRandomOrder()->get()->each(function ($user) use ($oldSession, $courses) {
             Software::factory()->count(rand(1, 3))->create([
                 'created_by' => $user->id,
                 'academic_session_id' => $oldSession->id,
+                'course_id' => $courses->random()->id,
             ]);
         });
 
-        Course::factory()->count(1000)->create(['academic_session_id' => $oldSession->id]);
-        $courses = Course::all();
-        $softwares = Software::all();
-        // Assign each course a single random software
-        foreach ($courses as $course) {
-            $software = Software::inRandomOrder()->whereNull('course_id')->first();
-            if ($software) {
-                $software->course_id = $course->id;
-                $software->save();
-            }
-        }
+        $globalSoftware = Software::factory()->count(1000)->create([
+            'academic_session_id' => $oldSession->id,
+            'course_id' => null,
+            'created_by' => $admin->id,
+        ]);
+
         $schools = [
             [
                 'name' => 'Engineering',

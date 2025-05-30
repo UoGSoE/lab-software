@@ -15,13 +15,14 @@ class Software extends Model
     /** @use HasFactory<\Database\Factories\SoftwareFactory> */
     use HasFactory;
 
-    protected $fillable = ['name', 'version', 'course_id', 'os', 'building', 'lab', 'notes', 'config', 'is_new', 'is_free', 'created_by', 'academic_session_id'];
+    protected $fillable = ['name', 'version', 'course_id', 'os', 'building', 'lab', 'notes', 'config', 'is_new', 'is_free', 'created_by', 'academic_session_id', 'removed_by', 'removed_at'];
 
     protected function casts(): array
     {
         return [
             'building' => 'array',
             'os' => 'array',
+            'removed_at' => 'datetime',
         ];
     }
 

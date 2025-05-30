@@ -78,22 +78,24 @@
 
                     @foreach ($course->software as $software)
                         <flux:table.row>
-                            <flux:table.cell>{{ $software->name }}</flux:table.cell>
+                            <flux:table.cell>@if ($software->removed_at) <flux:badge variant="pill" color="red" class="cursor-pointer" title="Unmark for removal" aria-label="Unmark for removal" wire:click="unmarkForRemoval({{ $software->id }})">Marked for removal</flux:badge> @endif {{ $software->name }}</flux:table.cell>
                             <flux:table.cell>{{ $software->version }}</flux:table.cell>
                             <flux:table.cell class="hidden md:table-cell">{{ $software->operatingSystems }}</flux:table.cell>
                             <flux:table.cell class="hidden md:table-cell">{{ $software->location }}</flux:table.cell>
                             <flux:table.cell>
                                 <flux:dropdown>
                                     <flux:button icon="ellipsis-horizontal" variant="ghost" inset />
-                                    <flux:navmenu>
-                                        <flux:navmenu.item icon="magnifying-glass" wire:click="viewSoftwareDetails({{ $software->id }})">
+                                    <flux:menu>
+                                        <flux:menu.item icon="magnifying-glass" wire:click="viewSoftwareDetails({{ $software->id }})">
                                             Details
-                                        </flux:navmenu.item>
-                                        <flux:navmenu.item href="#" icon="pencil">Change</flux:navmenu.item>
-                                        <flux:navmenu.item href="#" icon="document-duplicate">New copy</flux:navmenu.item>
-                                        <flux:menu.separator />
-                                        <flux:navmenu.item href="#" icon="trash" variant="danger">Delete</flux:navmenu.item>
-                                    </flux:navmenu>
+                                        </flux:menu.item>
+                                        <flux:menu.item href="#" icon="pencil" wire:click="editSoftware({{ $software->id }})">Change</flux:menu.item>
+                                        <flux:menu.item href="#" icon="document-duplicate">New copy</flux:menu.item>
+                                        @if (! $software->removed_at)
+                                            <flux:menu.separator />
+                                            <flux:menu.item icon="trash" variant="danger" wire:click="removeSoftware({{ $software->id }})">Remove</flux:menu.item>
+                                        @endif
+                                    </flux:menu>
                                 </flux:dropdown>
                             </flux:table.cell>
                         </flux:table.row>

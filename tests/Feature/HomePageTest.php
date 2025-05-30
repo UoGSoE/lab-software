@@ -181,4 +181,35 @@ describe('interacting with the existing software', function () {
 
         expect(Software::where('name', 'Test Software 2')->exists())->toBeTrue();
     });
+
+    it('allows staff to indicate that software is no longer needed', function () {
+        actingAs($this->user);
+        livewire(HomePage::class)
+            ->assertSee($this->software->name)
+            ->assertDontSee('Marked for removal')
+            ->call('removeSoftware', $this->software->id)
+            ->assertHasNoErrors()
+            ->assertSee($this->software->name)
+            ->assertSee('Marked for removal');
+
+        expect(Software::where('id', $this->software->id)->first()->removed_at)->not->toBeNull();
+        expect(Software::where('id', $this->software->id)->first()->removed_at->format('Y-m-d H:i'))->toBe(now()->format('Y-m-d H:i'));
+        expect(Software::where('id', $this->software->id)->first()->removed_by)->toBe($this->user->id);
+    });
+
+    it('allows staff to unmark software for removal', function () {
+        actingAs($this->user);
+        $removedSoftware = Software::factory()->create(['academic_session_id' => $this->session->id, 'course_id' => $this->course->id, 'removed_at' => now(), 'removed_by' => $this->user->id]);
+
+        livewire(HomePage::class)
+            ->assertSee($removedSoftware->name)
+            ->assertSee('Marked for removal')
+            ->call('unmarkForRemoval', $removedSoftware->id)
+            ->assertHasNoErrors()
+            ->assertSee($removedSoftware->name)
+            ->assertDontSee('Marked for removal');
+
+        expect(Software::where('id', $removedSoftware->id)->first()->removed_at)->toBeNull();
+        expect(Software::where('id', $removedSoftware->id)->first()->removed_by)->toBeNull();
+    });
 });

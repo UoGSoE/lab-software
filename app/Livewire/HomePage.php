@@ -183,4 +183,24 @@ class HomePage extends Component
         $this->softwareDetails = Software::with('createdBy')->findOrFail($softwareId);
         $this->modal('view-software-details')->show();
     }
+
+    public function removeSoftware(int $softwareId)
+    {
+        $software = Software::findOrFail($softwareId);
+        $software->removed_at = now();
+        $software->removed_by = Auth::user()?->id;
+        $software->save();
+
+        Flux::toast("{$software->name} marked for removal!", variant: 'success');
+    }
+
+    public function unmarkForRemoval(int $softwareId)
+    {
+        $software = Software::findOrFail($softwareId);
+        $software->removed_at = null;
+        $software->removed_by = null;
+        $software->save();
+
+        Flux::toast("{$software->name} unmarked for removal!", variant: 'success');
+    }
 }

@@ -27,6 +27,8 @@ return new class extends Migration
             $table->foreignId('created_by')->constrained('users');
             $table->foreignId('academic_session_id')->constrained('academic_sessions');
             $table->foreignId('course_id')->nullable()->constrained('courses');
+            $table->foreignId('removed_by')->nullable()->constrained('users');
+            $table->dateTime('removed_at')->nullable();
             $table->timestamps();
         });
     }
