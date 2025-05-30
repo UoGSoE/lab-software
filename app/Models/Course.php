@@ -2,10 +2,11 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Model;
 use App\Models\Scopes\AcademicSessionScope;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 #[ScopedBy([AcademicSessionScope::class])]
@@ -16,9 +17,9 @@ class Course extends Model
 
     protected $fillable = ['title', 'code', 'academic_session_id'];
 
-    public function software(): BelongsToMany
+    public function software(): HasMany
     {
-        return $this->belongsToMany(Software::class);
+        return $this->hasMany(Software::class);
     }
 
     public function users(): BelongsToMany

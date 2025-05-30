@@ -15,7 +15,7 @@ class Software extends Model
     /** @use HasFactory<\Database\Factories\SoftwareFactory> */
     use HasFactory;
 
-    protected $fillable = ['name', 'version', 'course_code', 'os', 'building', 'lab', 'notes', 'config', 'is_new', 'is_free', 'created_by', 'academic_session_id'];
+    protected $fillable = ['name', 'version', 'course_id', 'os', 'building', 'lab', 'notes', 'config', 'is_new', 'is_free', 'created_by', 'academic_session_id'];
 
     protected function casts(): array
     {
@@ -25,9 +25,9 @@ class Software extends Model
         ];
     }
 
-    public function courses(): BelongsToMany
+    public function course(): BelongsTo
     {
-        return $this->belongsToMany(Course::class);
+        return $this->belongsTo(Course::class);
     }
 
     public function createdBy(): BelongsTo
