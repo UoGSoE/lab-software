@@ -111,11 +111,12 @@
     <!-- add software modal -->
     <flux:modal name="add-software" variant="flyout" class="space-y-6">
         <div>
-            <flux:heading size="lg">Add new software</flux:heading>
+            <flux:heading size="lg">@if ($newSoftware['id']) Edit @else Add @endif software</flux:heading>
             <flux:subheading>Please fill in the details below.</flux:subheading>
         </div>
 
         <form wire:submit="addSoftware" class="space-y-6">
+            <input type="hidden" wire:model="newSoftware.id" />
             <flux:input label="Name of package (required)" placeholder="Eg, StarCCM+" wire:model="newSoftware.name" />
 
             <flux:field>

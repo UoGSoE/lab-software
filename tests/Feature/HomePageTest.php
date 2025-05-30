@@ -162,4 +162,17 @@ describe('interacting with the existing software', function () {
             ->assertSee($this->software->lab)
             ->assertSee($this->software->version);
     });
+
+    it('allows staff to edit existing software', function () {
+        actingAs($this->user);
+        livewire(HomePage::class)
+            ->call('editSoftware', $this->software->id)
+            ->assertHasNoErrors()
+            ->set('editSoftware.name', 'Test Software 2')
+            ->set('editSoftware.course_code', $this->course->code)
+            ->call('updateSoftware')
+            ->assertHasNoErrors();
+
+        expect(Software::where('name', 'Test Software 2')->exists())->toBeTrue();
+    });
 });

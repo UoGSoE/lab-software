@@ -25,6 +25,7 @@ class HomePage extends Component
     public Collection $availableSchools;
 
     public array $newSoftware = [
+        'id' => null,
         'os' => ['Windows'],
         'name' => '',
         'version' => '',
@@ -123,7 +124,15 @@ class HomePage extends Component
         $newSoftware['created_by'] = $userId;
         $academicSession = AcademicSession::where('is_default', true)->first();
         $newSoftware['academic_session_id'] = $academicSession->id;
-        $software = Software::create(Arr::except($newSoftware, ['course_code']));
+
+        $softwareData = Arr::except($newSoftware, ['course_code']);
+
+        if ($this->newSoftware['id']) {
+            $software = Software::findOrFail($this->newSoftware['id']);
+            $software->update($softwareData);
+        } else {
+            $software = Software::create($softwareData);
+        }
 
         $courseCode = strtoupper(trim($this->newSoftware['course_code']));
         $course = Course::where('code', '=', $courseCode)->first();
@@ -143,6 +152,22 @@ class HomePage extends Component
 
         Flux::toast('Software added!', variant: 'success');
     }
+
+    public function editSoftware(int $softwareId)
+    {
+        $software = Software::findOrFail($softwareId);
+        $this->newSoftware['id'] = $softwareId;
+        $this->newSoftware['course_code'] = $software->course->code;
+        $this->newSoftware['building'] = $software->building;
+        $this->newSoftware['lab'] = $software->lab;
+        $this->newSoftware['name'] = $software->name;
+        $this->newSoftware['version'] = $software->version;
+        $this->newSoftware['config'] = $software->config;
+        $this->newSoftware['notes'] = $software->notes;
+        $this->newSoftware['os'] = $software->os;
+        $this->modal('add-software')->show();
+    }
+
 
     public function signOff(int $courseId)
     {
