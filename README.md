@@ -1,66 +1,184 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Lab Software Management
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A Laravel 12 application for managing academic software requests, licences, and sign-off processes across course offerings and academic sessions. Built with Livewire & Flux for a reactive UI, integrated with LDAP for authentication, and supporting bulk import/export via Excel.
 
-## About Laravel
+## Table of Contents
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- [Features](#features)
+- [Requirements](#requirements)
+- [Git Clone](#git-clone)
+- [Installation & Setup](#installation--setup)
+- [Running the App](#running-the-app)
+- [Running Tests](#running-tests)
+- [Environment Variables](#environment-variables)
+- [Architecture & Code Organization](#architecture--code-organization)
+- [Key Components](#key-components)
+- [Deployment](#deployment)
+- [Contributing](#contributing)
+- [License](#license)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Features
 
-## Learning Laravel
+- LDAP-backed authentication (via `ohffs/simple-laravel-ldap`)
+- Role-based access: staff vs. admin
+- Per-course software catalogue with licences, versions, config, notes
+- Bulk import of software requests from `.xlsx` files (`ImportController` → `ImportData` job)
+- Export full dataset to Excel (`ExportAllData`)
+- Course sign-off workflow with email notifications (`User::getSignoffLink` & `signed-off` route)
+- Multi-session support: copy data forward to new academic sessions (`CopyForward` job & `AcademicSession::copyForwardTo`)
+- Admin settings: manage sessions & schools (Livewire `Settings` component)
+- Reactive UI with Livewire + Flux (`app/Livewire/*.php`)
+- Queue processing via Horizon
+- Error tracking with Sentry
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+---
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## Requirements
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- PHP 8.2+
+- Composer
+- Node.js & npm
+- MySQL (or configured `DB_CONNECTION`)
+- Redis (for cache, sessions, queues)
+- Lando (development)
 
-## Laravel Sponsors
+---
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## Git Clone
 
-### Premium Partners
+```bash
+git clone git@github.com:UoGSoE/lab-software.git
+cd lab-software
+```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+---
+
+## Installation & Setup
+
+1. Copy environment file
+   ```bash
+   cp .env.example .env
+   ```
+2. Start Lando & services
+   ```bash
+   lando start
+   lando composer install
+   npm install
+   ```
+3. Generate database tables & test data
+   ```bash
+   lando artisan mfs
+   ```
+4. (Optional) Publish assets & run Vite
+   ```bash
+   lando artisan vendor:publish --tag=laravel-assets --force
+   npm run dev
+   ```
+
+---
+
+## Running the App
+
+After `lando start`, your local URL will be displayed (e.g. `https://lab-software.lndo.site`). Use that to:
+
+- Log in via `/login` (LDAP credentials)
+- View home dashboard (`HomePage` Livewire component)
+- Import software requests at `/importexport`
+- Browse users at `/users`
+- Admin settings at `/settings`
+
+---
+
+## Running Tests
+
+```bash
+lando test
+```
+
+Tests are written with Pest (`pestphp/pest-plugin-laravel`, Livewire & Faker plugins).
+
+---
+
+## Environment Variables
+
+Key entries in `.env`:
+
+- APP_URL, APP_KEY, APP_DEBUG
+- DB_*, REDIS_*, QUEUE_CONNECTION=redis
+- LDAP_SERVER, LDAP_OU, LDAP_AUTHENTICATION
+- MAIL_HOST & port for email (default: MailHog)
+
+See `.env.example` for full list.
+
+---
+
+## Architecture & Code Organization
+
+- **app/Http/Controllers**
+  - `ImportController.php` – handles upload & dispatch of `ImportData` job
+- **app/Jobs**
+  - `ImportData.php` – validates rows, creates Courses, Software, Users & emails results
+  - `CopyForward.php` – enqueues `AcademicSession::copyForwardTo`
+- **app/Livewire**
+  - `HomePage.php`, `CollegeWide.php`, `ImportExport.php`, `UserList.php`, `Settings.php`, `Help.php`
+  - Each maps to a Blade view under `resources/views/livewire`
+- **app/Models**
+  - `AcademicSession`, `Course`, `Software`, `User` (all scoped by session)
+  - Domain logic: session copying, sign-off, scoped queries
+- **app/Exporters**
+  - `ExportAllData.php` – generates `.xlsx` via OpenSpout
+- **resources/views**
+  - Livewire templates & components
+  - Email views under `views/emails`
+- **routes/web.php**
+  - Public login/logout & signed-off link
+  - Authenticated routes under `SetAcademicSessionMiddleware`
+
+---
+
+## Key Components
+
+1. **LDAP Login**
+   - `App\Livewire\Auth\LdapLogin`
+   - Middleware: `guest` → `auth`
+2. **Bulk Import**
+   - Form on `/importexport` → POST to `ImportController@store`
+   - Job `ImportData` reads via `Ohffs\SimpleSpout\ExcelSheet`
+3. **Course Catalogue**
+   - `Course` & `Software` models, relation `course->software`
+   - Home filters: name, school prefix, course code (Livewire filtering)
+4. **Sign-Off Workflow**
+   - `User::getSignoffLink()` generates signed route → `/signed-off/{user}`
+   - `signed-off` route calls `User::signOffLastYearsSoftware()`
+5. **Session Management**
+   - Admin creates new session in `Settings` → enqueues `CopyForward` → duplicates data
+6. **Export**
+   - `ExportAllData::export()` streams all courses & software to Excel
+
+---
+
+## Deployment
+
+- Adjust `.env` for production (database, queue driver, Sentry DSN, mail)
+- Configure queue workers & Horizon
+- Build assets via `npm run build`
+- Set web‐server root to `public/`
+- Run migrations & seeders
+
+---
 
 ## Contributing
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+1. Fork & branch
+2. Follow PSR-12 & Laravel conventions
+3. Write tests (Pest) for new features
+4. Submit PR against `develop` branch
 
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+---
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+MIT © University of Glasgow School of Engineering
+
