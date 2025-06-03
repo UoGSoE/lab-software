@@ -2,11 +2,10 @@
     <flux:heading size="xl">Users</flux:heading>
 
     <flux:separator class="mt-6 mb-6" />
-
-    <div class="flex flex-row gap-4 items-center justify-center">
-        <flux:input type="text" name="search" wire:model.live="search" placeholder="Search" class="w-80"/>
+    <div class="flex flex-row gap-4 items-center justify-between">
+        <flux:input type="text" name="search" wire:model.live="search" placeholder="Search" class="w-1/8"/>
         <flux:checkbox label="Only show admins?" name="show_admins" wire:model.live="onlyAdmins" />
-        <flux:checkbox label="Only show not signed off?" name="show_missing" wire:model.live="onlyMissing" />
+        <flux:checkbox label="Only show not signed off?" name="show_missing" wire:model.live="onlyMissing"/>
     </div>
 
     <flux:separator class="mt-6 mb-6" />

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Facades\Cache;
 
 #[ScopedBy([AcademicSessionScope::class])]
 class Software extends Model
@@ -26,6 +27,24 @@ class Software extends Model
         ];
     }
 
+    protected static function booted(): void
+
+    {
+
+        static::updated(function (Software $software) {
+
+            Cache::forget('pendingDeletionCount');
+
+        });
+
+        static::deleted(function (Software $software) {
+
+            Cache::forget('pendingDeletionCount');
+
+        });
+
+    }
+
     public function course(): BelongsTo
     {
         return $this->belongsTo(Course::class);
@@ -39,6 +58,11 @@ class Software extends Model
     public function scopeGlobal($query)
     {
         return $query->whereNull('course_id');
+    }
+
+    public function scopePendingDeletion($query)
+    {
+        return $query->whereNotNull('removed_at');
     }
 
     public function getLocationAttribute(): string

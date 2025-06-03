@@ -30,12 +30,13 @@
                 <flux:navlist variant="outline">
                     <flux:navlist.item icon="inbox" href="{{ route('importexport') }}" :current="request()->routeIs('importexport')">Import/Export</flux:navlist.item>
                     <flux:navlist.item icon="document-text" href="/users" :current="request()->routeIs('users')">Manage Users</flux:navlist.item>
+                    <flux:navlist.item icon="trash" href="/deleted-software" :current="request()->routeIs('deleted-software')"><span class="flex items-center justify-between"><span>Pending Deletion</span><flux:badge color="amber">{{ $pendingDeletionCount }}</flux:badge></span></flux:navlist.item>
+                    <flux:navlist.item icon="cog-6-tooth" href="/settings" :current="request()->routeIs('settings')">Settings</flux:navlist.item>
                 </flux:navlist>
 
                 <flux:spacer />
 
                 <flux:navlist variant="outline">
-                    <flux:navlist.item icon="cog-6-tooth" href="/settings" :current="request()->routeIs('settings')">Settings</flux:navlist.item>
                     <flux:navlist.item icon="information-circle" href="/help" :current="request()->routeIs('help')">Help</flux:navlist.item>
                 </flux:navlist>
             @endadmin

@@ -13,19 +13,20 @@
 
         @foreach ($software as $package)
             <flux:table.row>
+                <flux:table.cell>@if ($package->removed_at) <flux:badge variant="pill" color="red" class="cursor-pointer" title="Unmark for removal" aria-label="Unmark for removal" wire:click="unmarkForRemoval({{ $package->id }})">Marked for removal</flux:badge> @endif {{ $package->name }}</flux:table.cell>
                 <flux:table.cell>{{ $package->name }}</flux:table.cell>
                 <flux:table.cell>{{ $package->version }}</flux:table.cell>
                 <flux:table.cell>{{ $package->operatingSystems }}</flux:table.cell>
                 <flux:table.cell>
                     <flux:dropdown>
                         <flux:button icon="ellipsis-horizontal" variant="ghost" inset />
-                        <flux:navmenu>
-                            <flux:navmenu.item icon="magnifying-glass">Details</flux:navmenu.item>
-                            <flux:navmenu.item href="#" icon="pencil">Change</flux:navmenu.item>
-                            <flux:navmenu.item href="#" icon="document-duplicate">New copy</flux:navmenu.item>
+                        <flux:menu>
+                            <flux:menu.item icon="magnifying-glass">Details</flux:menu.item>
+                            <flux:menu.item href="#" icon="pencil">Change</flux:menu.item>
+                            <flux:menu.item href="#" icon="document-duplicate">New copy</flux:menu.item>
                             <flux:menu.separator />
-                            <flux:navmenu.item href="#" icon="trash" variant="danger">Delete</flux:navmenu.item>
-                        </flux:navmenu>
+                            <flux:menu.item href="#" icon="trash" variant="danger" wire:click="removeSoftware({{ $package->id }})">Delete</flux:menu.item>
+                        </flux:menu>
                     </flux:dropdown>
                 </flux:table.cell>
             </flux:table.row>

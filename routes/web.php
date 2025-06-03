@@ -34,6 +34,7 @@ Route::middleware('auth', SetAcademicSessionMiddleware::class)->group(function (
     Route::get('/importexport', \App\Livewire\ImportExport::class)->name('importexport');
     Route::post('/importexport/import', [\App\Http\Controllers\ImportController::class, 'store'])->name('import-software');
     Route::get('/users', \App\Livewire\UserList::class)->name('users');
+    Route::get('/deleted-software', \App\Livewire\DeletedSoftware::class)->name('deleted-software');
     Route::get('/settings', \App\Livewire\Settings::class)->name('settings')->middleware(Admin::class);
     Route::get('/help', \App\Livewire\Help::class)->name('help');
 });
