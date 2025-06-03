@@ -22,7 +22,6 @@
             <flux:navlist variant="outline">
                 <flux:navlist.item icon="home" href="/" :current="request()->routeIs('home')">Home</flux:navlist.item>
                 <flux:navlist.item icon="inbox" href="/college-wide" :current="request()->routeIs('college-wide')">College-wide software</flux:navlist.item>
-                <flux:navlist.item icon="document-text" badge="12" href="#">Pending requests</flux:navlist.item>
             </flux:navlist>
 
             @admin

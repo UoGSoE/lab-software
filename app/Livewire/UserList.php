@@ -19,6 +19,10 @@ class UserList extends Component
 
     public $userDetails = [];
 
+    public $sortBy = 'surname';
+
+    public $sortDirection = 'asc';
+
     public function render()
     {
         return view('livewire.user-list', [
@@ -30,7 +34,7 @@ class UserList extends Component
     {
         $search = trim($this->search);
 
-        return User::orderBy('surname')->with('courses')
+        return User::orderBy($this->sortBy, $this->sortDirection)->with('courses')
             ->when($search, function ($query) use ($search) {
                 $query->where('surname', 'like', '%'.$search.'%')
                     ->orWhere('forenames', 'like', '%'.$search.'%');
@@ -78,4 +82,8 @@ class UserList extends Component
         $this->modal('user-details')->close();
     }
     
+    public function sort($field) {
+        $this->sortBy = $field;
+        $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+    }
 }

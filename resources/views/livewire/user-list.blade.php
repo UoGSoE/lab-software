@@ -3,8 +3,8 @@
 
     <flux:separator class="mt-6 mb-6" />
 
-    <div class="flex flex-row gap-4 items-center">
-        <flux:input type="text" label="Search" name="search" wire:model.live="search" />
+    <div class="flex flex-row gap-4 items-center justify-center">
+        <flux:input type="text" name="search" wire:model.live="search" placeholder="Search" class="w-80"/>
         <flux:checkbox label="Only show admins?" name="show_admins" wire:model.live="onlyAdmins" />
         <flux:checkbox label="Only show not signed off?" name="show_missing" wire:model.live="onlyMissing" />
     </div>
@@ -13,8 +13,8 @@
 
     <flux:table :paginate="$users">
         <flux:table.columns>
-            <flux:table.column>Name</flux:table.column>
-            <flux:table.column>Email</flux:table.column>
+            <flux:table.column sortable :sorted="$sortBy === 'surname'" :direction="$sortDirection" wire:click="sort('surname')" class="!text-gray-400">Name</flux:table.column>
+            <flux:table.column sortable :sorted="$sortBy === 'email'" :direction="$sortDirection" wire:click="sort('email')" class="!text-gray-400">Email</flux:table.column>
             <flux:table.column>Signed off</flux:table.column>
             <flux:table.column>Actions</flux:table.column>
         </flux:table.columns>
