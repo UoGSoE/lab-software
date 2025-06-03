@@ -1,22 +1,22 @@
 <div>
-    <flux:button>Add software</flux:button>
+    <flux:heading size="xl">College-wide software</flux:heading>
 
     <flux:separator class="mt-6 mb-6" />
-
+    <flux:input type="text" name="search" wire:model.live="search" placeholder="Search" class="w-80"/>
     <flux:table>
-        <flux:columns>
-            <flux:column sortable :sorted="$sortBy === 'name'" :direction="$sortDirection" wire:click="sort('name')" width="50%">Package</flux:column>
-            <flux:column sortable width="10%">Version</flux:column>
-            <flux:column sortable width="10%">O/S</flux:column>
-            <flux:column width="10%"></flux:column>
-        </flux:columns>
+        <flux:table.columns>
+            <flux:table.column sortable :sorted="$sortBy === 'name'" :direction="$sortDirection" wire:click="sort('name')" width="50%">Package</flux:table.column>
+            <flux:table.column sortable width="10%">Version</flux:table.column>
+            <flux:table.column sortable width="10%">O/S</flux:table.column>
+            <flux:table.column width="10%"></flux:table.column>
+        </flux:table.columns>
 
         @foreach ($software as $package)
-            <flux:row>
-                <flux:cell>{{ $package->name }}</flux:cell>
-                <flux:cell>{{ $package->version }}</flux:cell>
-                <flux:cell>{{ $package->operatingSystems }}</flux:cell>
-                <flux:cell>
+            <flux:table.row>
+                <flux:table.cell>{{ $package->name }}</flux:table.cell>
+                <flux:table.cell>{{ $package->version }}</flux:table.cell>
+                <flux:table.cell>{{ $package->operatingSystems }}</flux:table.cell>
+                <flux:table.cell>
                     <flux:dropdown>
                         <flux:button icon="ellipsis-horizontal" variant="ghost" inset />
                         <flux:navmenu>
@@ -27,8 +27,8 @@
                             <flux:navmenu.item href="#" icon="trash" variant="danger">Delete</flux:navmenu.item>
                         </flux:navmenu>
                     </flux:dropdown>
-                </flux:cell>
-            </flux:row>
+                </flux:table.cell>
+            </flux:table.row>
         @endforeach
     </flux:table>
 </div>

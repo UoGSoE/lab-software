@@ -11,6 +11,8 @@ class CollegeWide extends Component
 
     public $sortDirection = 'asc';
 
+    public $search = '';
+
     public function sort($field)
     {
         $this->sortBy = $field;
@@ -31,6 +33,9 @@ class CollegeWide extends Component
             $sortColumn = 'building';
         }
 
-        return Software::take(40)->orderBy($sortColumn, $this->sortDirection)->get();
+        return Software::global()->orderBy($sortColumn, $this->sortDirection)->when(trim($this->search), function ($query) {
+            $query->where('name', 'like', '%'.trim($this->search).'%');
+        })->get();
     }
+
 }

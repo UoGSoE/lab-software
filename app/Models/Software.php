@@ -36,6 +36,11 @@ class Software extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
+    public function scopeGlobal($query)
+    {
+        return $query->whereNull('course_id');
+    }
+
     public function getLocationAttribute(): string
     {
         // TODO: this might be redundant - waiting on feedback

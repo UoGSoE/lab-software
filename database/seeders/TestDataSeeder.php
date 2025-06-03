@@ -51,7 +51,7 @@ class TestDataSeeder extends Seeder
             ]);
         });
 
-        $globalSoftware = Software::factory()->count(1000)->create([
+        $globalSoftware = Software::factory()->count(100)->create([
             'academic_session_id' => $oldSession->id,
             'course_id' => null,
             'created_by' => $admin->id,
