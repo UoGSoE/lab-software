@@ -26,7 +26,7 @@
 
   /* If you want to also update Flux's accent colors to use your blue */
   --color-accent: var(--color-blue-500);
-  --color-accent-content: var(--color-blue-100);
+  --color-accent-content: var(--color-blue-600);
   --color-accent-foreground: var(--color-white);
 }
 
@@ -47,7 +47,7 @@
 
     /* Dark mode accent colors */
     --color-accent: var(--color-blue-500);
-    --color-accent-content: var(--color-blue-400);
+    --color-accent-content: var(--color-blue-600);
     --color-accent-foreground: var(--color-white);
   }
 }
