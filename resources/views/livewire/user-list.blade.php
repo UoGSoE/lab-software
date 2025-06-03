@@ -26,12 +26,12 @@
                 <flux:table.cell>
                     <flux:dropdown>
                         <flux:button icon="ellipsis-horizontal" variant="ghost" inset />
-                        <flux:navmenu>
-                            <flux:navmenu.item icon="magnifying-glass">Details</flux:navmenu.item>
-                            <flux:navmenu.item href="#" icon="pencil">@if ($user->is_admin) Remove admin rights @else Make admin @endif</flux:navmenu.item>
+                        <flux:menu>
+                            <flux:menu.item icon="magnifying-glass">Details</flux:menu.item>
+                            <flux:menu.item wire:click="toggleAdmin({{ $user->id }})" icon="pencil">@if ($user->is_admin) Remove admin rights @else Make admin @endif</flux:menu.item>
                             <flux:menu.separator />
-                            <flux:navmenu.item href="#" icon="trash" variant="danger">Delete</flux:navmenu.item>
-                        </flux:navmenu>
+                            <flux:menu.item href="#" icon="trash" variant="danger">Delete</flux:menu.item>
+                        </flux:menu>
                     </flux:dropdown>
                 </flux:table.cell>
             </flux:table.row>

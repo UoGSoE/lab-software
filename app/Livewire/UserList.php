@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\Scopes\AcademicSessionScope;
 use App\Models\User;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -54,5 +55,14 @@ class UserList extends Component
     public function updatedOnlyMissing()
     {
         $this->resetPage();
+    }
+
+    public function toggleAdmin(User $user) {
+        $new_is_admin_status = !$user->is_admin;
+        $users = User::withoutGlobalScope(AcademicSessionScope::class)->where('username', $user->username)->get();
+        foreach ($users as $user) {
+            $user->is_admin = $new_is_admin_status;
+            $user->save();
+        }
     }
 }
