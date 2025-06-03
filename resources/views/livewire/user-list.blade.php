@@ -27,14 +27,31 @@
                     <flux:dropdown>
                         <flux:button icon="ellipsis-horizontal" variant="ghost" inset />
                         <flux:menu>
-                            <flux:menu.item icon="magnifying-glass">Details</flux:menu.item>
+                            <flux:menu.item icon="magnifying-glass" wire:click="showUserDetails({{ $user->id }})">Details</flux:menu.item>
                             <flux:menu.item wire:click="toggleAdmin({{ $user->id }})" icon="pencil">@if ($user->is_admin) Remove admin rights @else Make admin @endif</flux:menu.item>
-                            <flux:menu.separator />
-                            <flux:menu.item href="#" icon="trash" variant="danger">Delete</flux:menu.item>
                         </flux:menu>
                     </flux:dropdown>
                 </flux:table.cell>
             </flux:table.row>
         @endforeach
     </flux:table>
+    <flux:modal name="user-details" variant="flyout">
+            <div class="space-y-6">
+                <div>
+                    <flux:heading size="lg">User details</flux:heading>
+                </div>
+                @if ($userDetails)
+                    <flux:text>Username: {{ $userDetails['username'] }}</flux:text>
+                    <flux:text>Email: {{ $userDetails['email'] }}</flux:text>
+                    <flux:text>Surname: {{ $userDetails['surname'] }}</flux:text>
+                    <flux:text>Forenames: {{ $userDetails['forenames'] }}</flux:text>
+                    <flux:text>Is admin: {{ $userDetails['is_admin'] ? 'Yes' : 'No' }}</flux:text>
+                @endif
+                <div class="flex">
+                    <flux:spacer />
+
+                    <flux:button type="submit" variant="primary" wire:click="closeUserDetails">Close</flux:button>
+                </div>
+            </div>
+        </flux:modal>
 </div>

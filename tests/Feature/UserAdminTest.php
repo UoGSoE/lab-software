@@ -27,6 +27,18 @@ it('shows all the current users', function () {
     livewire(UserList::class)->assertSee($user1->email)->assertSee($user2->email);
 });
 
+it('can show user details', function () {
+    $user = User::factory()->create(['academic_session_id' => $this->academicSession->id]);
+
+    actingAs($this->admin);
+    livewire(UserList::class)
+        ->assertDontSee($user->username)
+        ->call('showUserDetails', $user->id)
+        ->assertSee($user->username)
+        ->call('closeUserDetails')
+        ->assertDontSee($user->username);
+});
+
 describe('Can add/move admin rights to users', function () {
     it('can add or remove admin rights for a user', function () {
         $user1 = User::factory()->create(['academic_session_id' => $this->academicSession->id]);

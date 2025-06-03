@@ -17,6 +17,8 @@ class UserList extends Component
 
     public $onlyMissing = false;
 
+    public $userDetails = [];
+
     public function render()
     {
         return view('livewire.user-list', [
@@ -65,4 +67,15 @@ class UserList extends Component
             $user->save();
         }
     }
+
+    public function showUserDetails(User $user) {
+        $this->userDetails = $user->toArray();
+        $this->modal('user-details')->show();
+    }
+
+    public function closeUserDetails() {
+        $this->reset('userDetails');
+        $this->modal('user-details')->close();
+    }
+    
 }
