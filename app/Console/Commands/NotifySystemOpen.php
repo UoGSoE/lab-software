@@ -32,7 +32,7 @@ class NotifySystemOpen extends Command
     {
         $academicSession = AcademicSession::getDefault();
 
-        $setting = Setting::getSetting('notifications.system_open_date');
+        $setting = Setting::getSetting('notifications_system_open_date');
 
         if (! $setting) {
             $this->error('No setting found for system open date');
@@ -42,6 +42,7 @@ class NotifySystemOpen extends Command
 
         try {
             $date = $setting->toDate();
+            //$date = $setting->value?->toDate();
         } catch (\Exception $e) {
             $this->error('Invalid date for system open date');
 

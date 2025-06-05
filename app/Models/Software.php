@@ -65,6 +65,11 @@ class Software extends Model
         return $query->whereNotNull('removed_at');
     }
 
+    public function scopeForSession($query, $id)
+    {
+        return $query->withoutGlobalScope(AcademicSessionScope::class)->where('academic_session_id', '=', $id);
+    }
+
     public function getLocationAttribute(): string
     {
         // TODO: this might be redundant - waiting on feedback

@@ -57,16 +57,16 @@ it('we can create a new academic session with all data copied forward', function
         'is_default' => true,
     ]);
 
-    expect($newSession->courses()->withoutGlobalScope(AcademicSessionScope::class)->where('academic_session_id', $newSession->id)->count())->toBe(0);
-    expect($newSession->users()->withoutGlobalScope(AcademicSessionScope::class)->where('academic_session_id', $newSession->id)->count())->toBe(0);
-    expect($newSession->software()->withoutGlobalScope(AcademicSessionScope::class)->where('academic_session_id', $newSession->id)->count())->toBe(0);
+    expect($newSession->courses()->forSession($newSession->id)->count())->toBe(0);
+    expect($newSession->users()->forSession($newSession->id)->count())->toBe(0);
+    expect($newSession->software()->forSession($newSession->id)->count())->toBe(0);
 
     CopyForward::dispatchSync($previousSession, $newSession);
     $newSession->setAsDefault();
 
-    expect($newSession->courses()->withoutGlobalScope(AcademicSessionScope::class)->where('academic_session_id', $newSession->id)->count())->toEqual(2);
-    expect($newSession->users()->withoutGlobalScope(AcademicSessionScope::class)->where('academic_session_id', $newSession->id)->count())->toEqual(2);
-    expect($newSession->software()->withoutGlobalScope(AcademicSessionScope::class)->where('academic_session_id', $newSession->id)->count())->toEqual(2);
+    expect($newSession->courses()->forSession($newSession->id)->count())->toEqual(2);
+    expect($newSession->users()->forSession($newSession->id)->count())->toEqual(2);
+    expect($newSession->software()->forSession($newSession->id)->count())->toEqual(2);
 
     // also test course <-> software relationship is synced
     expect($newSession->courses()->where('code', $course1->code)->first()->software()->count())->toEqual(1);
@@ -78,8 +78,8 @@ it('we can create a new academic session with all data copied forward', function
         ->toEqual(1);
 
     // and that the user signoffs are not copied forward
-    expect($newSession->users()->withoutGlobalScope(AcademicSessionScope::class)->where('academic_session_id', $newSession->id)->where('email', $user1->email)->first()->courses()->withoutGlobalScope(AcademicSessionScope::class)->where('academic_session_id', $newSession->id)->count())->toEqual(0);
-    expect($newSession->users()->withoutGlobalScope(AcademicSessionScope::class)->where('academic_session_id', $newSession->id)->where('email', $user2->email)->first()->courses()->withoutGlobalScope(AcademicSessionScope::class)->where('academic_session_id', $newSession->id)->count())->toEqual(0);
+    expect($newSession->users()->forSession($newSession->id)->where('email', $user1->email)->first()->courses()->forSession($newSession->id)->count())->toEqual(0);
+    expect($newSession->users()->forSession($newSession->id)->where('email', $user2->email)->first()->courses()->forSession($newSession->id)->count())->toEqual(0);
 });
 
 it('can get the default academic session', function () {

@@ -26,4 +26,9 @@ class Course extends Model
     {
         return $this->belongsToMany(User::class)->withTimestamps();
     }
+
+    public function scopeForSession($query, $id)
+    {
+        return $query->withoutGlobalScope(AcademicSessionScope::class)->where('academic_session_id', '=', $id);
+    }
 }

@@ -28,19 +28,19 @@ class SystemOpen extends Mailable
         if (! $previousSession) {
             $previousSession = $currentSession;
         }
-        $lastYearsUser = User::withoutGlobalScope(AcademicSessionScope::class)
-                            ->where('academic_session_id', $previousSession->id)->where('username', $user->username)->first();
+        $lastYearsUser = User::forSession($previousSession->id)->where('username', $user->username)->first();
+        
         if (! $lastYearsUser) {
             $lastYearsUser = $user;
         }
         // build a collection of course codes, each with a collection of software names & versions
-        $this->softwareList = $lastYearsUser->courses()->withoutGlobalScope(AcademicSessionScope::class)->where('academic_session_id', $previousSession->id)
+        $this->softwareList = $lastYearsUser->courses()->forSession($previousSession->id)
             ->get()
             ->reject(
-                fn ($course) => $course->software()->withoutGlobalScope(AcademicSessionScope::class)->where('academic_session_id', $previousSession->id)->count() === 0
+                fn ($course) => $course->software()->forSession($previousSession->id)->count() === 0
             )
             ->mapWithKeys(function ($course) use ($previousSession) {
-                $software = $course->software()->withoutGlobalScope(AcademicSessionScope::class)->where('academic_session_id', $previousSession->id)->get()->map(function ($software) {
+                $software = $course->software()->forSession($previousSession->id)->get()->map(function ($software) {
                     return $software->name.($software->version ? ' version '.$software->version : '');
                 });
 
@@ -65,6 +65,8 @@ class SystemOpen extends Mailable
             ],
         );
     }
+
+    
 
     public function attachments(): array
     {

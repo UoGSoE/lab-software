@@ -160,13 +160,22 @@ describe('The livewire settings page', function () {
             ->set('openDate', '2025-04-08')
             ->set('closeDate', '2025-04-25')
             ->set('reminderDays', 7)
-            ->call('updateSoftwareRequestPeriod')
+            ->call('updateDates')
             ->assertHasNoErrors();
 
         $this->assertDatabaseHas('settings', [
-            'notifications.system_open_date' => '2025-04-08',
-            'notifications.closing_date' => '2025-04-25',
-            'notifications.system_reminder_days' => 7,
+            'key' => 'notifications_system_open_date',
+            'value' => '2025-04-08'
+        ]);
+
+        $this->assertDatabaseHas('settings', [
+            'key' => 'notifications_closing_date',
+            'value' => '2025-04-25'
+        ]);
+
+        $this->assertDatabaseHas('settings', [
+            'key' => 'notifications_system_reminder_days',
+            'value' => 7
         ]);
     });
 });

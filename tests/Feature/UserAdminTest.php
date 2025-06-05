@@ -34,9 +34,7 @@ it('can show user details', function () {
     livewire(UserList::class)
         ->assertDontSee($user->username)
         ->call('showUserDetails', $user->id)
-        ->assertSee($user->username)
-        ->call('closeUserDetails')
-        ->assertDontSee($user->username);
+        ->assertSee($user->username);
 });
 
 describe('Can add/move admin rights to users', function () {

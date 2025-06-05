@@ -45,6 +45,12 @@ class TestDataSeeder extends Seeder
             'is_staff' => true,
             'academic_session_id' => $oldSession->id,
         ]);
+        $testUser = User::factory()->create([
+            'username' => 'testuser2x',
+            'password' => bcrypt('secret'),
+            'is_staff' => true,
+            'academic_session_id' => $oldSession->id,
+        ]);
         $courses = Course::factory()->count(1000)->create(['academic_session_id' => $oldSession->id]);
         User::factory()->count(1000)->create([
             'academic_session_id' => $oldSession->id,
@@ -102,9 +108,10 @@ class TestDataSeeder extends Seeder
             School::create($school);
         }
 
-        Setting::setSetting('notifications.system_open_date', now()->format('Y-m-d'));
-        Setting::setSetting('notifications.closing_date', now()->addDays(14)->format('Y-m-d'));
-        Setting::setSetting('notifications.system_reminder_days', 0);
+        // FLAG
+        Setting::setSetting('notifications_system_open_date', now()->format('Y-m-d'));
+        Setting::setSetting('notifications_closing_date', now()->addDays(14)->format('Y-m-d'));
+        Setting::setSetting('notifications_system_reminder_days', 0);
         $oldSession->copyForwardTo($newSession);
         $newSession->setAsDefault();
     }

@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Models\Scopes\AcademicSessionScope;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -63,20 +64,24 @@ class User extends Authenticatable
         return $this->belongsToMany(Course::class)->withTimestamps();
     }
 
+    public function scopeForSession($query, $id)
+    {
+        return $query->withoutGlobalScope(AcademicSessionScope::class)->where('academic_session_id', '=', $id);
+    }
+
     public function getPreviousSignOffs(): Collection
     {
         $currentAcademicSession = AcademicSession::getDefault();
         $previousAcademicSession = $currentAcademicSession->getPrevious();
 
-        $oldUser = User::withoutGlobalScope(AcademicSessionScope::class)
+        $oldUser = User::forSession($previousAcademicSession->id)
             ->where('username', '=', $this->username)
-            ->where('academic_session_id', '=', $previousAcademicSession->id)
             ->first();
         if (! $oldUser) {
             return collect([]);
         }
 
-        return $oldUser->courses()->withoutGlobalScope(AcademicSessionScope::class)->get();
+        return $oldUser->courses()->forSession($previousAcademicSession->id)->get();
     }
 
     public function signOffLastYearsSoftware()

@@ -21,8 +21,7 @@ describe('system open notification', function () {
     it('sends the initial message on the opening date to all users in the current academic session', function () {
         Mail::fake();
         Setting::factory()->create([
-            'academic_session_id' => $this->academicSession->id,
-            'key' => 'notifications.system_open_date',
+            'key' => 'notifications_system_open_date',
             'value' => now()->format('Y-m-d'),
         ]);
 
@@ -51,8 +50,7 @@ describe('system open notification', function () {
     it('does not send the initial message if the date is not today', function () {
         Mail::fake();
         Setting::factory()->create([
-            'academic_session_id' => $this->academicSession->id,
-            'key' => 'notifications.system_open_date',
+            'key' => 'notifications_system_open_date',
             'value' => now()->addDays(2)->format('Y-m-d'),
         ]);
 
@@ -71,8 +69,7 @@ describe('system open notification', function () {
             'academic_session_id' => $this->academicSession->id,
         ]);
         $setting = Setting::factory()->create([
-            'academic_session_id' => $this->academicSession->id,
-            'key' => 'notifications.system_open_date',
+            'key' => 'notifications_system_open_date',
             'value' => 'invalid-date',
         ]);
 
@@ -90,13 +87,14 @@ describe('system open notification', function () {
     it('has the right contents in the mail', function () {
         Mail::fake();
         Setting::factory()->create([
-            'academic_session_id' => $this->academicSession->id,
-            'key' => 'notifications.system_open_date',
+            'key' => 'notifications_system_open_date',
             'value' => now()->format('Y-m-d'),
         ]);
         $oldSession = AcademicSession::factory()->create([
             'name' => '2020/2021',
             'is_default' => false,
+            'created_at' => now()->subYear(),
+            'updated_at' => now()->subYear(),
         ]);
 
         $user = User::factory()->create([
@@ -155,13 +153,14 @@ describe('system open notification', function () {
     it('has the right contents in the mail when the user has no courses with software in the old academic session', function () {
         Mail::fake();
         Setting::factory()->create([
-            'academic_session_id' => $this->academicSession->id,
-            'key' => 'notifications.system_open_date',
+            'key' => 'notifications_system_open_date',
             'value' => now()->format('Y-m-d'),
         ]);
         $oldSession = AcademicSession::factory()->create([
             'name' => '2020/2021',
             'is_default' => false,
+            'created_at' => now()->subYear(),
+            'updated_at' => now()->subYear(),
         ]);
 
         $user = User::factory()->create([
@@ -248,8 +247,7 @@ describe('deadline notification', function () {
     it('sends a second nag message before the closing date for anyone who has not signed stuff off', function () {
         Mail::fake();
         Setting::factory()->create([
-            'academic_session_id' => $this->academicSession->id,
-            'key' => 'notifications.closing_date',
+            'key' => 'notifications_closing_date',
             'value' => now()->addDays(7)->format('Y-m-d'),  // we send the notification 7 days before the closing date
         ]);
 
@@ -277,8 +275,7 @@ describe('deadline notification', function () {
 
     it('has the right contents in the closing mail', function () {
         Setting::factory()->create([
-            'academic_session_id' => $this->academicSession->id,
-            'key' => 'notifications.closing_date',
+            'key' => 'notifications_closing_date',
             'value' => now()->addDays(7)->format('Y-m-d'),  // we send the notification 7 days before the closing date
         ]);
 

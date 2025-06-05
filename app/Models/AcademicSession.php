@@ -73,25 +73,25 @@ class AcademicSession extends Model
             $newSoftwareMap = [];
             $newUserMap = [];
 
-            foreach (User::withoutGlobalScope(AcademicSessionScope::class)->where('academic_session_id', $thisId)->get() as $user) {
+            foreach (User::forSession($thisId)->get() as $user) {
                 $newUser = $user->replicate();
                 $newUser->academic_session_id = $newSession->id;
                 $newUser->save();
                 $newUserMap[$user->id] = $newUser->id;
             }
-            foreach (Software::withoutGlobalScope(AcademicSessionScope::class)->where('academic_session_id', $thisId)->get() as $software) {
+            foreach (Software::forSession($thisId)->get() as $software) {
                 $newSoftware = $software->replicate();
                 $newSoftware->academic_session_id = $newSession->id;
                 $newSoftware->created_by = $newUserMap[$software->created_by];
                 $newSoftware->save();
                 $newSoftwareMap[$software->id] = $newSoftware->id;
             }
-            foreach (Course::withoutGlobalScope(AcademicSessionScope::class)->where('academic_session_id', $thisId)->get() as $course) {
+            foreach (Course::forSession($thisId)->get() as $course) {
                 $newCourse = $course->replicate();
                 $newCourse->academic_session_id = $newSession->id;
                 $newCourse->save();
-                $course->software()->withoutGlobalScope(AcademicSessionScope::class)->where('academic_session_id', $thisId)->get()->each(function ($software) use ($newCourse, $newSoftwareMap) {
-                    $newSoftware = Software::withoutGlobalScope(AcademicSessionScope::class)->find($newSoftwareMap[$software->id]);
+                $course->software()->forSession($thisId)->get()->each(function ($software) use ($newCourse, $newSoftwareMap, $newSession) {
+                    $newSoftware = Software::forSession($newSession->id)->find($newSoftwareMap[$software->id]);
                     $newSoftware->course_id = $newCourse->id;
                     $newSoftware->save();
                 });

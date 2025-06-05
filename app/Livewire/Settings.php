@@ -2,12 +2,13 @@
 
 namespace App\Livewire;
 
-use App\Jobs\CopyForward;
-use App\Models\AcademicSession;
+use Flux\Flux;
 use App\Models\School;
 use App\Models\Setting;
-use Flux\Flux;
 use Livewire\Component;
+use App\Jobs\CopyForward;
+use App\Models\AcademicSession;
+use Illuminate\Support\Facades\Cache;
 
 class Settings extends Component
 {
@@ -48,9 +49,9 @@ class Settings extends Component
         $this->newSessionNameStart = $start + 1;
         $this->newSessionNameEnd = $end + 1;
         $this->defaultSessionId = $defaultSession->id;
-        $this->openDate = Setting::getSetting('notifications.system_open_date')?->toDate()?->format('Y-m-d') ?? '';
-        $this->closeDate = Setting::getSetting('notifications.closing_date')?->toDate()?->format('Y-m-d') ?? '';
-        $this->reminderDays = intval(Setting::getSetting('notifications.system_reminder_days', 7)->value);
+        $this->openDate = Setting::getSetting('notifications_system_open_date')?->toDate()?->format('Y-m-d') ?? '';
+        $this->closeDate = Setting::getSetting('notifications_closing_date')?->toDate()?->format('Y-m-d') ?? '';
+        $this->reminderDays = intval(Setting::getSetting('notifications_system_reminder_days', 7)->value);
     }
 
     public function render()
@@ -196,10 +197,11 @@ class Settings extends Component
             'reminderDays' => 'required|integer|min:0',
         ]);
 
-        Setting::setSetting('notifications.system_open_date', $this->openDate);
-        Setting::setSetting('notifications.closing_date', $this->closeDate);
-        Setting::setSetting('notifications.system_reminder_days', $this->reminderDays);
+        Setting::setSetting('notifications_system_open_date', $this->openDate);
+        Setting::setSetting('notifications_closing_date', $this->closeDate);
+        Setting::setSetting('notifications_system_reminder_days', $this->reminderDays);
 
         Flux::toast('Dates updated!', variant: 'success');
+        Cache::delete('editingEnabled');
     }
 }

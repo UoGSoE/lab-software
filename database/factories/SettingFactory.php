@@ -19,8 +19,7 @@ class SettingFactory extends Factory
     {
         return [
             'key' => $this->faker->word(),
-            'value' => $this->faker->date(),
-            'academic_session_id' => AcademicSession::factory(),
+            'value' => $this->faker->date()
         ];
     }
 }

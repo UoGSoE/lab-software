@@ -1,4 +1,4 @@
-<div>
+<div> 
     <div class="flex flex-col md:flex-row justify-between gap-2 items-center">
         <div class="flex flex-row gap-2 items-center">
             <div>
@@ -6,9 +6,11 @@
                 <flux:subheading class="text-center md:text-left">Session {{ $academicSession }}</flux:subheading>
             </div>
         </div>
+        @editingEnabled
         <div class="flex flex-col md:flex-row gap-2 items-center">
             <flux:button icon="plus" variant="filled" wire:click="requestNewSoftware(null)">Request new software</flux:button>
         </div>
+        @endeditingEnabled
     </div>
 
     <flux:separator class="mt-6" />
@@ -33,6 +35,7 @@
                 <div class="space-y-6">
                     <div class="flex flex-row gap-2 justify-between items-center">
                         <flux:heading size="lg">{{ $course->code }}</flux:heading>
+                        @editingEnabled
                         <flux:button
                             :variant="$course->signed_off ? 'ghost' : 'filled'"
                             wire:click="signOff({{ $course->id }})"
@@ -46,9 +49,17 @@
                             Sign off
                         @endif
                         </flux:button>
+                        @else
+                        <flux:badge>
+                        @if ($course->signed_off)
+                            Signed off
+                        @endif
+                        </flux:badge>
+                        @endeditingEnabled
                     </div>
                     <flux:subheading>{{ $course->title }}</flux:subheading>
                 </div>
+                @editingEnabled
                 <div class="flex flex-col md:flex-row gap-2 items-center">
                     <flux:button
                         :variant="$course->signed_off ? 'ghost' : 'filled'"
@@ -64,6 +75,7 @@
                     </flux:button>
                     <flux:button variant="filled" icon="plus" wire:click="requestNewSoftware({{ $course->id }})">Request new software</flux:button>
                 </div>
+                @endeditingEnabled
             </div>
 
             <div>
@@ -83,6 +95,7 @@
                             <flux:table.cell class="hidden md:table-cell">{{ $software->operatingSystems }}</flux:table.cell>
                             <flux:table.cell class="hidden md:table-cell">{{ $software->location }}</flux:table.cell>
                             <flux:table.cell>
+                                @editingEnabled
                                 <flux:dropdown>
                                     <flux:button icon="ellipsis-horizontal" variant="ghost" inset />
                                     <flux:menu>
@@ -97,6 +110,7 @@
                                         @endif
                                     </flux:menu>
                                 </flux:dropdown>
+                                @endeditingEnabled
                             </flux:table.cell>
                         </flux:table.row>
                     @endforeach

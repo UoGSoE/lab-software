@@ -17,7 +17,7 @@ class NotifySystemClosing extends Command
 
     public function handle(): int
     {
-        $setting = Setting::getSetting('notifications.closing_date');
+        $setting = Setting::getSetting('notifications_closing_date');
 
         if (! $setting) {
             $this->error('No setting found for closing date');
@@ -27,6 +27,7 @@ class NotifySystemClosing extends Command
 
         try {
             $date = $setting->toDate();
+
         } catch (\Exception $e) {
             $this->error('Invalid date for closing date');
 
@@ -38,8 +39,7 @@ class NotifySystemClosing extends Command
 
             return 1;
         }
-
-        $alertDate = $date->subDays(Setting::getSetting('notifications.system_reminder_days', 7));
+        $alertDate = $date->subDays(Setting::getSetting('notifications_system_reminder_days', 7)->value);
         
         if (! $alertDate->isToday()) {
             return 0;
