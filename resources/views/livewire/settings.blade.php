@@ -6,14 +6,14 @@
     <div class="grid auto-cols-max grid-flow-row lg:grid-flow-col gap-4">
         <div class="">
             <flux:card>
-                <form class="space-y-6">
+                <form class="space-y-6" wire:submit="updateDates" method="POST">
                     <flux:heading size="lg">Software request period</flux:heading>
-                    <flux:input type="date" value="2025-04-08" class="w-full" label="Allow users to change their requirements from" name="open_date" />
-                    <flux:input type="date" value="2025-04-25" class="w-full" label="Until" name="close_date" />
+                    <flux:input type="date" wire:model="openDate" class="w-full" label="Allow users to change their requirements from" name="open_date" />
+                    <flux:input type="date" wire:model="closeDate" class="w-full" label="Until" name="close_date" />
 
                     <flux:separator />
 
-                    <flux:input type="number" label="Number of days before those dates to send reminders" name="reminder_days" value="7" min="0" />
+                    <flux:input type="number" label="Number of days before those dates to send reminders" name="reminder_days" wire:model="reminderDays" min="0" />
 
                     <flux:button class="cursor-pointer" type="submit">Update</flux:button>
                 </form>

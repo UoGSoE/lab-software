@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 
-#[ScopedBy([AcademicSessionScope::class])]
 class Setting extends Model
 {
     /** @use HasFactory<\Database\Factories\SettingFactory> */
@@ -16,12 +15,29 @@ class Setting extends Model
 
     protected $fillable = [
         'key',
-        'value',
-        'academic_session_id',
+        'value'
     ];
 
     public function toDate(): ?Carbon
     {
         return $this->value ? Carbon::parse($this->value) : null;
+    }
+
+    public static function getSetting(string $key, $default = null)
+    {
+        return static::where('key', $key)->first() ?? new static(['key' => $key, 'value' => $default]);
+    }
+
+    public static function setSetting(string $key, $value)
+    {
+        $setting = static::where('key', $key)->first();
+        if (! $setting) {
+            $setting = new static();
+        }
+        $setting->key = $key;
+        $setting->value = $value;
+        $setting->save();
+
+        return $setting;
     }
 }

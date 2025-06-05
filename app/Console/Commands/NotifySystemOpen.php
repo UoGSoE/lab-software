@@ -32,8 +32,7 @@ class NotifySystemOpen extends Command
     {
         $academicSession = AcademicSession::getDefault();
 
-        $setting = Setting::where('key', 'notifications.system_open_date')
-            ->first();
+        $setting = Setting::getSetting('notifications.system_open_date');
 
         if (! $setting) {
             $this->error('No setting found for system open date');

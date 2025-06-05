@@ -152,4 +152,21 @@ describe('The livewire settings page', function () {
             'course_prefix' => 'SECOND',
         ]);
     });
+
+    it('lets admins change the start and end dates of the software request period', function () {
+        actingAs($this->admin);
+
+        livewire(Settings::class)
+            ->set('openDate', '2025-04-08')
+            ->set('closeDate', '2025-04-25')
+            ->set('reminderDays', 7)
+            ->call('updateSoftwareRequestPeriod')
+            ->assertHasNoErrors();
+
+        $this->assertDatabaseHas('settings', [
+            'notifications.system_open_date' => '2025-04-08',
+            'notifications.closing_date' => '2025-04-25',
+            'notifications.system_reminder_days' => 7,
+        ]);
+    });
 });

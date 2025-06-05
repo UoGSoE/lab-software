@@ -49,7 +49,7 @@
                 <div class="flex">
                     <flux:spacer />
 
-                    <flux:button type="submit" variant="primary" wire:click="closeUserDetails">Close</flux:button>
+                    <flux:button type="submit" variant="primary"  x-on:click="$flux.modal('user-details').close()">Close</flux:button>
                 </div>
             </div>
         </flux:modal>

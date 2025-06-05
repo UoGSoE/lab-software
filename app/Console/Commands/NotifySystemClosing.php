@@ -15,22 +15,9 @@ class NotifySystemClosing extends Command
 
     protected $description = 'Notify users that the system is closing';
 
-    /**
-     * The number of days before the closing date to notify users.
-     */
-    protected $daysBeforeClosing = 7;
-
     public function handle(): int
     {
-        $academicSession = AcademicSession::getDefault();
-        if (! $academicSession) {
-            $this->error('No default academic session found');
-
-            return 1;
-        }
-
-        $setting = Setting::where('key', 'notifications.closing_date')
-            ->first();
+        $setting = Setting::getSetting('notifications.closing_date');
 
         if (! $setting) {
             $this->error('No setting found for closing date');
@@ -52,8 +39,9 @@ class NotifySystemClosing extends Command
             return 1;
         }
 
-        $closingDate = $date->subDays($this->daysBeforeClosing);
-        if (! $closingDate->isToday()) {
+        $alertDate = $date->subDays(Setting::getSetting('notifications.system_reminder_days', 7));
+        
+        if (! $alertDate->isToday()) {
             return 0;
         }
 

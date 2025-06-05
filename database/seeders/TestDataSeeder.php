@@ -5,6 +5,8 @@ namespace Database\Seeders;
 use App\Models\AcademicSession;
 use App\Models\Course;
 use App\Models\School;
+use App\Models\Scopes\AcademicSessionScope;
+use App\Models\Setting;
 use App\Models\Software;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -28,10 +30,14 @@ class TestDataSeeder extends Seeder
         $oldSession = AcademicSession::create([
             'name' => $thisYear - 1 .'-'.$thisYear,
             'is_default' => true,
+            'created_at' => now()->subYear(),
+            'updated_at' => now()->subYear(),
         ]);
         $newSession = AcademicSession::create([
             'name' => $thisYear.'-'.$thisYear + 1,
             'is_default' => false,
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
         $admin = User::factory()->admin()->create([
             'username' => 'admin2x',
@@ -43,12 +49,21 @@ class TestDataSeeder extends Seeder
         User::factory()->count(1000)->create([
             'academic_session_id' => $oldSession->id,
         ]);
-        User::take(300)->inRandomOrder()->get()->each(function ($user) use ($oldSession, $courses) {
+        User::withoutGlobalScope(AcademicSessionScope::class)->take(300)->inRandomOrder()->get()->each(function ($user) use ($oldSession, $courses) {
+            $randomCourse = $courses->shift();
             Software::factory()->count(rand(1, 3))->create([
                 'created_by' => $user->id,
                 'academic_session_id' => $oldSession->id,
-                'course_id' => $courses->random()->id,
+                'course_id' => $randomCourse->id,
             ]);
+            $user->courses()->attach($randomCourse);
+            $randomCourse = $courses->shift();
+            Software::factory()->count(rand(1, 3))->create([
+                'created_by' => $user->id,
+                'academic_session_id' => $oldSession->id,
+                'course_id' => $randomCourse->id,
+            ]);
+            $user->courses()->attach($randomCourse);
         });
 
         $globalSoftware = Software::factory()->count(100)->create([
@@ -87,6 +102,9 @@ class TestDataSeeder extends Seeder
             School::create($school);
         }
 
+        Setting::setSetting('notifications.system_open_date', now()->format('Y-m-d'));
+        Setting::setSetting('notifications.closing_date', now()->addDays(14)->format('Y-m-d'));
+        Setting::setSetting('notifications.system_reminder_days', 0);
         $oldSession->copyForwardTo($newSession);
         $newSession->setAsDefault();
     }

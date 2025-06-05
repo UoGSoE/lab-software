@@ -10,6 +10,7 @@
 @foreach($software as $softwareName)
 - {{ $softwareName }}
 @endforeach
+
 @endif
 @endforeach
 

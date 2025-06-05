@@ -22,7 +22,7 @@ class SystemClosing extends Mailable
      */
     public function __construct(public User $user)
     {
-        $this->closingDate = Setting::where('key', 'notifications.closing_date')->first()->toDate()->format('d/m/Y');
+        $this->closingDate = Setting::getSetting('notifications.closing_date')->toDate()->format('d/m/Y');
     }
 
     /**

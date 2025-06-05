@@ -21,7 +21,7 @@
                 <flux:table.cell>{{ $package->version }}</flux:table.cell>
                 <flux:table.cell>{{ $package->operatingSystems }}</flux:table.cell>
                 <flux:table.cell>
-                    <flux:button size="sm" inset icon="trash" variant="danger" wire:click="deleteSoftware({{ $package->id }})"></flux:button>
+                    <flux:button size="sm" inset icon="trash" variant="danger" wire:confirm="Are you sure you want to delete this software?" wire:click="deleteSoftware({{ $package->id }})"></flux:button>
                 </flux:table.cell>
             </flux:table.row>
         @endforeach

@@ -76,11 +76,6 @@ class UserList extends Component
         $this->userDetails = $user->toArray();
         $this->modal('user-details')->show();
     }
-
-    public function closeUserDetails() {
-        $this->reset('userDetails');
-        $this->modal('user-details')->close();
-    }
     
     public function sort($field) {
         $this->sortBy = $field;
