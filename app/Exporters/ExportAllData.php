@@ -26,7 +26,7 @@ class ExportAllData
         $writer = new Writer;
         $writer->openToFile($filePath);
 
-        $courses = Course::orderBy('code')->with('software.createdBy')->get();
+        $courses = Course::orderBy('code')->with(['software.createdBy', 'software.removedBy'])->get();
 
         $headers = [
             Cell::fromValue('Course Code'),
@@ -40,6 +40,7 @@ class ExportAllData
             Cell::fromValue('Free'),
             Cell::fromValue('Config'),
             Cell::fromValue('Notes'),
+            Cell::fromValue('Removed by')
         ];
 
         $row = new Row($headers);
@@ -59,6 +60,7 @@ class ExportAllData
                 $cells[] = Cell::fromValue($software->is_free ? 'Yes' : 'No');
                 $cells[] = Cell::fromValue($software->config);
                 $cells[] = Cell::fromValue($software->notes);
+                $cells[] = Cell::fromValue($software->removed_by ? $software->removedBy->email : '');
             }
             $row = new Row($cells);
             $writer->addRow($row);

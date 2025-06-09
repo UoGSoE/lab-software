@@ -247,6 +247,11 @@ describe('Exporting data', function () {
             $software->save();
         }
 
+        $software =Software::where('name', '=', '7-Zip')->first();
+        $software->removed_at = now();
+        $software->removed_by = $this->admin->id;
+        $software->save();
+        
         $filename = (new ExportAllData)->export();
 
         expect($filename)->toBeString();
@@ -262,6 +267,11 @@ describe('Exporting data', function () {
                 expect($row[0])->toBe($courseCodes[$index - 1]);
                 expect($row[1])->toBe($softwareNames[$index - 1]);
                 expect($row[2])->toBe($softwareVersions[$index - 1]);
+                if ($row[1] === '7-Zip') {
+                    expect($row[11])->toBe($this->admin->email);
+                } else {
+                    expect($row[11])->toBeEmpty();
+                }
             }
         }
     });

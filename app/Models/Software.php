@@ -55,6 +55,11 @@ class Software extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
+    public function removedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'removed_by');
+    }
+
     public function scopeGlobal($query)
     {
         return $query->whereNull('course_id');
