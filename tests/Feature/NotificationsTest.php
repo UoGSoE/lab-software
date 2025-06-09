@@ -285,7 +285,7 @@ describe('deadline notification', function () {
 
         $mailable = new SystemClosing($user1);
         $mailable->assertSeeInText('Lab Software System closing soon');
-        $mailable->assertSeeInText("The system is closing on " . now()->addDays(7)->format('d/m/Y'));
+        $mailable->assertSeeInText("The system is closing on " . now()->addDays(7)->format('jS F'));
         $mailable->assertSeeInText(route('home'));
     });
 

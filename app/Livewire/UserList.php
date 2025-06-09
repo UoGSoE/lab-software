@@ -2,10 +2,14 @@
 
 namespace App\Livewire;
 
-use App\Models\Scopes\AcademicSessionScope;
+use App\Mail\SystemClosing;
 use App\Models\User;
 use Livewire\Component;
+use App\Mail\SystemOpen;
 use Livewire\WithPagination;
+use App\Models\Scopes\AcademicSessionScope;
+use Flux\Flux;
+use Illuminate\Support\Facades\Mail;
 
 class UserList extends Component
 {
@@ -80,5 +84,14 @@ class UserList extends Component
     public function sort($field) {
         $this->sortBy = $field;
         $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+    }
+
+    public function testMail($type, User $user) {
+        if ($type === 'open') {
+            Mail::to($user)->send(new SystemOpen($user));
+        } else {
+            Mail::to($user)->send(new SystemClosing($user));
+        }
+        Flux::toast('Mail sent');
     }
 }

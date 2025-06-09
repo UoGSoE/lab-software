@@ -108,7 +108,6 @@ class TestDataSeeder extends Seeder
             School::create($school);
         }
 
-        // FLAG
         Setting::setSetting('notifications_system_open_date', now()->format('Y-m-d'));
         Setting::setSetting('notifications_closing_date', now()->addDays(14)->format('Y-m-d'));
         Setting::setSetting('notifications_system_reminder_days', 0);

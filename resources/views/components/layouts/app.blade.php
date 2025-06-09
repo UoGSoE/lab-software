@@ -40,7 +40,7 @@
                     <flux:navlist.item icon="information-circle" href="/help" :current="request()->routeIs('help')">Help</flux:navlist.item>
                 </flux:navlist>
             @endadmin
-
+            <flux:spacer />
             <flux:dropdown position="top" align="start" class="max-lg:hidden">
                 <flux:profile name="{{ auth()->check() ? auth()->user()->full_name : 'Guest' }}" />
 

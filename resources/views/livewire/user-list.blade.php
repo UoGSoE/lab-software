@@ -28,6 +28,8 @@
                         <flux:menu>
                             <flux:menu.item icon="magnifying-glass" wire:click="showUserDetails({{ $user->id }})">Details</flux:menu.item>
                             <flux:menu.item wire:click="toggleAdmin({{ $user->id }})" icon="pencil">@if ($user->is_admin) Remove admin rights @else Make admin @endif</flux:menu.item>
+                            <flux:menu.item wire:click="testMail('open', {{ $user->id }})" icon="inbox">Test system open</flux:menu.item>
+                            <flux:menu.item wire:click="testMail('closed', {{ $user->id }})" icon="inbox">Test system closed</flux:menu.item>
                         </flux:menu>
                     </flux:dropdown>
                 </flux:table.cell>
