@@ -33,14 +33,11 @@
                     <flux:navlist.item icon="trash" href="/deleted-software" :current="request()->routeIs('deleted-software')"><span class="flex items-center justify-between"><span>Pending Deletion</span><flux:badge color="amber">{{ $pendingDeletionCount }}</flux:badge></span></flux:navlist.item>
                     <flux:navlist.item icon="cog-6-tooth" href="/settings" :current="request()->routeIs('settings')">Settings</flux:navlist.item>
                 </flux:navlist>
-
-                <flux:spacer />
-
-                <flux:navlist variant="outline">
-                    <flux:navlist.item icon="information-circle" href="/help" :current="request()->routeIs('help')">Help</flux:navlist.item>
-                </flux:navlist>
             @endadmin
             <flux:spacer />
+            <flux:navlist variant="outline">
+                    <flux:navlist.item icon="information-circle" href="/help" :current="request()->routeIs('help')">Help</flux:navlist.item>
+                </flux:navlist>
             <flux:dropdown position="top" align="start" class="max-lg:hidden">
                 <flux:profile name="{{ auth()->check() ? auth()->user()->full_name : 'Guest' }}" />
 
