@@ -88,9 +88,9 @@ class UserList extends Component
 
     public function testMail($type, User $user) {
         if ($type === 'open') {
-            Mail::to($user)->send(new SystemOpen($user));
+            Mail::to($user)->queue(new SystemOpen($user));
         } else {
-            Mail::to($user)->send(new SystemClosing($user));
+            Mail::to($user)->queue(new SystemClosing($user));
         }
         Flux::toast('Mail sent');
     }
