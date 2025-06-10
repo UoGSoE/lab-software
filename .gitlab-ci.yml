@@ -168,7 +168,7 @@ deploy_to_prod:
     IMAGE_NAME: ""
   script:
   - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
-  - DOCKER_BUILDKIT=1 docker build --build-arg PHP_VERSION=${PHP_VERSION} --target="${DOCKER_TARGET}" -t $IMAGE_NAME .
+  - DOCKER_BUILDKIT=1 docker build --build-arg PHP_VERSION=${PHP_VERSION} --build-arg FLUX_USERNAME=${FLUX_USERNAME} --build-arg FLUX_LICENSE_KEY=${FLUX_LICENSE_KEY}  --target="${DOCKER_TARGET}" -t $IMAGE_NAME .
   - docker push $IMAGE_NAME
 
 .deployment:

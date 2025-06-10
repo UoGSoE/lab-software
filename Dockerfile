@@ -34,8 +34,8 @@ RUN npm install && \
 
 ### Prod php dependencies
 FROM dev as prod-composer
-ENV FLUX_USERNAME=${FLUX_USERNAME} 
-ENV FLUX_LICENSE_KEY=${FLUX_LICENSE_KEY}
+ARG FLUX_USERNAME
+ARG FLUX_LICENSE_KEY
 ENV APP_ENV=production
 ENV APP_DEBUG=0
 
@@ -65,8 +65,8 @@ RUN composer install \
 
 ### QA php dependencies
 FROM prod-composer as qa-composer
-ENV FLUX_USERNAME=${FLUX_USERNAME} 
-ENV FLUX_LICENSE_KEY=${FLUX_LICENSE_KEY}
+ARG FLUX_USERNAME
+ARG FLUX_LICENSE_KEY
 ENV APP_ENV=local
 ENV APP_DEBUG=1
 
