@@ -34,6 +34,8 @@ RUN npm install && \
 
 ### Prod php dependencies
 FROM dev as prod-composer
+ENV FLUX_USERNAME=${FLUX_USERNAME} 
+ENV FLUX_LICENSE_KEY=${FLUX_LICENSE_KEY}
 ENV APP_ENV=production
 ENV APP_DEBUG=0
 
@@ -50,6 +52,8 @@ COPY database/factories database/factories
 
 COPY composer.* ./
 
+RUN composer config http-basic.composer.fluxui.dev "${FLUX_USERNAME}" "${FLUX_LICENSE_KEY}"
+
 RUN composer install \
     --no-interaction \
     --no-plugins \
@@ -59,8 +63,12 @@ RUN composer install \
 
 ### QA php dependencies
 FROM prod-composer as qa-composer
+ENV FLUX_USERNAME=${FLUX_USERNAME} 
+ENV FLUX_LICENSE_KEY=${FLUX_LICENSE_KEY}
 ENV APP_ENV=local
 ENV APP_DEBUG=1
+
+RUN composer config http-basic.composer.fluxui.dev "${FLUX_USERNAME}" "${FLUX_LICENSE_KEY}"
 
 RUN composer install \
     --no-interaction \

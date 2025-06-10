@@ -107,6 +107,8 @@ build-qa:
   variables:
     DOCKER_TARGET: ci
     IMAGE_NAME: $QA_IMAGE_NAME
+    FLUX_USERNAME: ${FLUX_USERNAME}
+    FLUX_LICENSE_KEY: ${FLUX_LICENSE_KEY}
 
 build-prod:
   stage: build-prod
