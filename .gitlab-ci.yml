@@ -55,7 +55,7 @@ unit-tests:
   - php artisan migrate:fresh
   - cat .env
   - echo "Add code coverage and upload artifact to gitlab"
-  - if `php artisan list | grep -q 'Run the application tests'`; then php artisan test --parallel -c phpunit.gitlab.xml ; else php vendor/bin/phpunit -c phpunit.gitlab.xml --colors=never --testdox ; fi
+  - php ./vendor/bin/pest -c phpunit.gitlab.xml
 
 php-codestyle-check:
   stage: test
