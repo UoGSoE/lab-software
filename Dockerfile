@@ -128,4 +128,5 @@ ENV APP_DEBUG=0
 COPY --from=qa-composer /var/www/html/vendor /var/www/html/vendor
 
 #- Clear the caches
+ENV CACHE_DRIVER=array
 RUN php /var/www/html/artisan optimize:clear
