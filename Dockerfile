@@ -95,7 +95,8 @@ COPY docker/custom_php.ini /usr/local/etc/php/conf.d/custom_php.ini
 COPY --from=prod-composer /var/www/html/vendor /var/www/html/vendor
 
 #- Copy in our front-end assets
-RUN mkdir -p /var/www/html/public/build /var/www/html/public/build
+RUN mkdir -p /var/www/html/public/build
+COPY --from=frontend /home/node/public/build /var/www/html/public/build
 
 #- Copy in our code
 COPY . /var/www/html
