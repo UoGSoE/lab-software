@@ -37,19 +37,13 @@
             <flux:spacer />
             <flux:navlist variant="outline">
                     <flux:navlist.item icon="information-circle" href="/help" :current="request()->routeIs('help')">Help</flux:navlist.item>
-                </flux:navlist>
-            <flux:dropdown position="top" align="start" class="max-lg:hidden">
-                <flux:profile name="{{ auth()->check() ? auth()->user()->full_name : 'Guest' }}" />
-
-                <flux:menu>
-                        <flux:menu.item>
-                            <form method="post" action="{{ route('logout') }}">
-                            @csrf
-                            <flux:button class="w-full" icon="arrow-right-start-on-rectangle" type="submit">Logout</flux:button>
-                        </form>
-                    </flux:menu.item>
-                </flux:menu>
-            </flux:dropdown>
+            </flux:navlist>
+            <div class="flex flex-row gap-2 items-center justify-between">
+                <form method="post" action="{{ route('logout') }}" class="w-full">
+                    @csrf
+                    <flux:button class="w-full" icon="arrow-right-start-on-rectangle" type="submit">Logout {{ auth()->check() ? auth()->user()->full_name : '' }}</flux:button>
+                </form>
+            </div>
         </flux:sidebar>
         @endauth
 

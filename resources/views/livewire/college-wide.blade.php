@@ -21,10 +21,6 @@
                     <flux:dropdown>
                         <flux:button icon="ellipsis-horizontal" variant="ghost" inset />
                         <flux:menu>
-                            <flux:menu.item icon="magnifying-glass">Details</flux:menu.item>
-                            <flux:menu.item href="#" icon="pencil">Change</flux:menu.item>
-                            <flux:menu.item href="#" icon="document-duplicate">New copy</flux:menu.item>
-                            <flux:menu.separator />
                             <flux:menu.item href="#" icon="trash" variant="danger" wire:click="removeSoftware({{ $package->id }})">Delete</flux:menu.item>
                         </flux:menu>
                     </flux:dropdown>
