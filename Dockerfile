@@ -10,28 +10,6 @@ RUN chmod u+x /usr/local/bin/app-start /usr/local/bin/app-healthcheck
 CMD ["tini", "--", "/usr/local/bin/app-start"]
 
 
-### Build JS/css assets
-FROM node:20.13.1 as frontend
-
-# workaround for mix.version() webpack bug
-RUN ln -s /home/node/public /public
-
-USER node
-WORKDIR /home/node
-
-RUN mkdir -p /home/node/public/css /home/node/public/js /home/node/resources
-
-COPY --chown=node:node package*.json *.js .babelrc* /home/node/
-COPY --chown=node:node resources/js* /home/node/resources/js
-COPY --chown=node:node resources/sass* /home/node/resources/sass
-COPY --chown=node:node resources/scss* /home/node/resources/scss
-COPY --chown=node:node resources/css* /home/node/resources/css
-COPY --chown=node:node resources/views* /home/node/resources/views
-
-RUN npm install && \
-    npm run build && \
-    npm cache clean --force
-
 
 ### Prod php dependencies
 FROM dev as prod-composer
@@ -118,6 +96,30 @@ RUN php /var/www/html/artisan storage:link && \
 
 #- Set up the default healthcheck
 HEALTHCHECK --start-period=30s CMD /usr/local/bin/app-healthcheck
+
+### Build JS/css assets
+FROM node:20.13.1 as frontend
+
+# workaround for mix.version() webpack bug
+RUN ln -s /home/node/public /public
+
+USER node
+WORKDIR /home/node
+
+RUN mkdir -p /home/node/public/css /home/node/public/js /home/node/resources
+
+COPY --chown=node:node package*.json *.js .babelrc* /home/node/
+COPY --chown=node:node resources/js* /home/node/resources/js
+COPY --chown=node:node resources/sass* /home/node/resources/sass
+COPY --chown=node:node resources/scss* /home/node/resources/scss
+COPY --chown=node:node resources/css* /home/node/resources/css
+COPY --chown=node:node resources/views* /home/node/resources/views
+COPY --chown=node:node --from=qa-composer /var/www/html/vendor /home/node/vendor
+
+RUN npm install && \
+    npm run build && \
+    npm cache clean --force
+
 
 
 ### Build the ci version of the app (prod+dev packages)
