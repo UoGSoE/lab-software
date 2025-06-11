@@ -26,6 +26,7 @@ COPY --chown=node:node resources/js* /home/node/resources/js
 COPY --chown=node:node resources/sass* /home/node/resources/sass
 COPY --chown=node:node resources/scss* /home/node/resources/scss
 COPY --chown=node:node resources/css* /home/node/resources/css
+COPY --chown=node:node resources/views* /home/node/resources/views
 
 RUN npm install && \
     npm run build && \
